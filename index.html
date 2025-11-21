@@ -1,1850 +1,1209 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>GymGuide Pro - 健身动作库 & 身体分析 DEMO</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-        :root {
-            --bg: #020617;
-            --bg-soft: #020617;
-            --bg-elevated: rgba(15,23,42,0.96);
-            --card-bg: rgba(15,23,42,0.96);
-            --card-soft: rgba(15,23,42,0.85);
-            --border-subtle: rgba(31,41,55,0.9);
-            --accent: #22c55e;
-            --accent-soft: rgba(34,197,94,0.18);
-            --accent-strong: #4ade80;
-            --text-main: #e5e7eb;
-            --text-soft: #9ca3af;
-            --danger: #fecaca;
-            --warning: #facc15;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, -system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background:
-                    radial-gradient(circle at top left, rgba(56,189,248,0.12), transparent 55%),
-                    radial-gradient(circle at top right, rgba(34,197,94,0.12), transparent 60%),
-                    radial-gradient(circle at center, #020617 0, #000 58%, #020617 100%);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
-
-        .app {
-            max-width: 1220px;
-            margin: 0 auto;
-            padding: 16px 16px 32px;
-        }
-
-        @media (min-width: 1200px) {
-            .app {
-                padding: 24px 24px 40px;
-            }
-        }
-
-        /* 顶部栏 */
-
-        .app-shell {
-            border-radius: 18px;
-            padding: 12px 14px 16px;
-            background: linear-gradient(120deg, rgba(15,23,42,0.96), rgba(6,95,70,0.82));
-            border: 1px solid rgba(55,65,81,0.95);
-            box-shadow:
-                    0 20px 45px rgba(0,0,0,0.75),
-                    0 0 0 1px rgba(15,23,42,0.9) inset;
-            backdrop-filter: blur(22px);
-        }
-
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand-logo {
-            width: 32px;
-            height: 32px;
-            border-radius: 12px;
-            background:
-                    radial-gradient(circle at 25% 0, #bbf7d0, #22c55e 40%, #0f766e 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow:
-                    0 0 20px rgba(34,197,94,0.9),
-                    0 0 0 1px rgba(6,95,70,0.9);
-            color: #022c22;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .brand-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .brand-title-main {
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            font-size: 17px;
-        }
-
-        .brand-title-sub {
-            font-size: 11px;
-            color: #d1d5db;
-            opacity: 0.9;
-        }
-
-        .app-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .badge-pill {
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-size: 11px;
-            background: rgba(15,23,42,0.82);
-            border: 1px solid rgba(55,65,81,0.95);
-            color: var(--text-soft);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .badge-pill.highlight {
-            background: rgba(22,163,74,0.2);
-            border-color: rgba(22,163,74,0.9);
-            color: #bbf7d0;
-        }
-
-        .badge-pill span.icon {
-            font-size: 13px;
-        }
-
-        /* 顶部 Tab */
-
-        .tab-header {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 4px;
-            flex-wrap: wrap;
-        }
-
-        .tab-button {
-            border-radius: 999px;
-            border: 1px solid transparent;
-            background: rgba(15,23,42,0.7);
-            padding: 7px 14px;
-            font-size: 13px;
-            color: #d1d5db;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.18s ease-out;
-        }
-
-        .tab-button span.emoji {
-            font-size: 15px;
-        }
-
-        .tab-button:hover {
-            border-color: rgba(148,163,184,0.9);
-            background: rgba(15,23,42,0.9);
-        }
-
-        .tab-button.active {
-            background: rgba(15,118,110,0.98);
-            border-color: rgba(45,212,191,0.9);
-            color: #ecfdf5;
-            box-shadow:
-                    0 0 0 1px rgba(6,95,70,0.9),
-                    0 10px 22px rgba(6,78,59,0.78);
-        }
-
-        .app-description {
-            font-size: 11px;
-            color: #d1d5db;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        main {
-            margin-top: 10px;
-        }
-
-        .tab-section {
-            border-radius: 14px;
-            padding: 12px;
-            background: radial-gradient(circle at top left, rgba(15,118,110,0.18), rgba(15,23,42,0.98));
-            border: 1px solid rgba(31,41,55,0.9);
-            box-shadow: 0 18px 40px rgba(0,0,0,0.7);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .section-title-row {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title-badge {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: rgba(15,23,42,0.94);
-            border: 1px solid rgba(55,65,81,0.95);
-            color: var(--text-soft);
-        }
-
-        .section-desc {
-            font-size: 12px;
-            color: var(--text-soft);
-        }
-
-        /* 动作库布局 */
-
-        .exercise-layout {
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
-            gap: 12px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            border: 1px solid rgba(31,41,55,0.95);
-            box-shadow:
-                    0 16px 30px rgba(0,0,0,0.7),
-                    0 0 0 1px rgba(15,23,42,0.9) inset;
-            padding: 12px;
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .card-subtitle {
-            font-size: 11px;
-            color: var(--text-soft);
-        }
-
-        .chip {
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 999px;
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(55,65,81,0.95);
-            color: var(--text-soft);
-            white-space: nowrap;
-        }
-
-        .chip.success {
-            background: rgba(22,163,74,0.18);
-            border-color: var(--accent);
-            color: #bbf7d0;
-        }
-
-        /* 部位选择 & 分类 */
-
-        .bodypart-list {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            margin-bottom: 8px;
-        }
-
-        .bodypart-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(55,65,81,0.95);
-            background: rgba(15,23,42,0.9);
-            color: #d1d5db;
-            font-size: 12px;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.18s ease-out;
-        }
-
-        .bodypart-button .icon {
-            font-size: 15px;
-        }
-
-        .bodypart-button:hover {
-            border-color: rgba(148,163,184,0.95);
-            background: rgba(15,23,42,1);
-        }
-
-        .bodypart-button.active {
-            background: var(--accent-soft);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(34,197,94,0.45);
-            color: #bbf7d0;
-        }
-
-        .category-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .category-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .category-button {
-            font-size: 11px;
-            border-radius: 999px;
-            border: 1px solid rgba(55,65,81,0.95);
-            background: rgba(15,23,42,0.9);
-            color: var(--text-soft);
-            padding: 4px 9px;
-            cursor: pointer;
-            transition: all 0.18s ease-out;
-        }
-
-        .category-button:hover {
-            border-color: rgba(148,163,184,0.95);
-            color: #e5e7eb;
-        }
-
-        .category-button.active {
-            background: rgba(22,163,74,0.25);
-            border-color: var(--accent);
-            color: #bbf7d0;
-        }
-
-        .exercise-search {
-            flex-shrink: 0;
-        }
-
-        .search-input {
-            border-radius: 999px;
-            border: 1px solid rgba(55,65,81,0.95);
-            background: rgba(15,23,42,0.96);
-            padding: 4px 10px;
-            font-size: 11px;
-            color: var(--text-main);
-            outline: none;
-            min-width: 120px;
-        }
-
-        .search-input::placeholder {
-            color: var(--text-soft);
-        }
-
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(34,197,94,0.4);
-        }
-
-        .exercise-list {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .exercise-item {
-            padding: 7px 8px;
-            border-radius: 10px;
-            border: 1px solid rgba(31,41,55,0.95);
-            background: rgba(15,23,42,0.9);
-            cursor: pointer;
-            transition: all 0.16s ease-out;
-        }
-
-        .exercise-item:hover {
-            border-color: rgba(148,163,184,0.95);
-            background: rgba(15,23,42,1);
-        }
-
-        .exercise-item.active {
-            border-color: var(--accent);
-            background: rgba(22,163,74,0.24);
-            box-shadow: 0 0 0 1px rgba(34,197,94,0.35);
-        }
-
-        .exercise-name {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .exercise-meta {
-            font-size: 11px;
-            color: var(--text-soft);
-            margin-bottom: 1px;
-        }
-
-        .exercise-muscles {
-            font-size: 11px;
-            color: #9ca3af;
-        }
-
-        .exercise-detail {
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .exercise-detail h3 {
-            margin: 0 0 4px;
-            font-size: 15px;
-        }
-
-        .exercise-detail h4 {
-            margin: 10px 0 4px;
-            font-size: 13px;
-        }
-
-        .exercise-equipment {
-            font-size: 12px;
-            color: #a5b4fc;
-            margin-bottom: 2px;
-        }
-
-        .exercise-muscles-main {
-            font-size: 12px;
-            color: #93c5fd;
-            margin-bottom: 4px;
-        }
-
-        .exercise-desc {
-            font-size: 12px;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .step-list,
-        .tip-list {
-            padding-left: 18px;
-            margin: 0 0 4px;
-        }
-
-        .step-list li,
-        .tip-list li {
-            margin-bottom: 2px;
-        }
-
-        .disclaimer {
-            font-size: 11px;
-            color: var(--text-soft);
-            margin-top: 6px;
-        }
-
-        .placeholder-text,
-        .empty-text {
-            font-size: 12px;
-            color: var(--text-soft);
-        }
-
-        /* 身体分析布局 */
-
-        .analysis-layout {
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
-            gap: 12px;
-        }
-
-        .analysis-form {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        label {
-            font-size: 12px;
-            color: #cbd5f5;
-        }
-
-        .input-inline {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        input[type="number"] {
-            flex: 1;
-            padding: 6px 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(55,65,81,0.95);
-            background: rgba(15,23,42,0.98);
-            color: var(--text-main);
-            font-size: 13px;
-            outline: none;
-        }
-
-        input[type="number"]::placeholder {
-            color: var(--text-soft);
-        }
-
-        input[type="number"]:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(34,197,94,0.4);
-        }
-
-        .unit {
-            font-size: 12px;
-            color: var(--text-soft);
-        }
-
-        .submit-btn {
-            margin-top: 6px;
-            padding: 7px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(16,185,129,0.9);
-            background: radial-gradient(circle at top left, rgba(34,197,94,0.2), rgba(5,46,22,0.98));
-            color: #bbf7d0;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.18s ease-out;
-        }
-
-        .submit-btn span.icon {
-            font-size: 15px;
-        }
-
-        .submit-btn:hover {
-            box-shadow:
-                    0 0 0 1px rgba(34,197,94,0.45),
-                    0 14px 30px rgba(4,120,87,0.85);
-            transform: translateY(-1px);
-        }
-
-        .hint-text {
-            font-size: 11px;
-            color: var(--text-soft);
-        }
-
-        .analysis-result-card {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 8px;
-        }
-
-        .result-pill {
-            border-radius: 12px;
-            padding: 8px 10px;
-            border: 1px solid rgba(55,65,81,0.95);
-            background: rgba(15,23,42,0.98);
-        }
-
-        .result-label {
-            font-size: 11px;
-            color: var(--text-soft);
-            margin-bottom: 2px;
-        }
-
-        .result-value {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .result-desc {
-            font-size: 12px;
-            color: var(--text-main);
-        }
-
-        .plan-block {
-            font-size: 12px;
-            line-height: 1.6;
-            margin-top: 2px;
-        }
-
-        .plan-block ul {
-            padding-left: 18px;
-            margin: 0 0 4px;
-        }
-
-        .plan-block li {
-            margin-bottom: 2px;
-        }
-
-        .safety-note {
-            margin-top: 6px;
-            font-size: 11px;
-            color: var(--text-soft);
-        }
-
-        /* 响应式 */
-
-        @media (max-width: 960px) {
-            .app-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .exercise-layout,
-            .analysis-layout {
-                grid-template-columns: minmax(0, 1fr);
-            }
-        }
-
-        @media (max-width: 640px) {
-            .app-shell {
-                padding: 10px 10px 14px;
-            }
-
-            .tab-section {
-                padding: 10px;
-            }
-
-            .card {
-                padding: 10px;
-            }
-
-            .exercise-list {
-                max-height: 300px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                scroll-behavior: auto !important;
-                transition: none !important;
-            }
-        }
-
-        /* 自定义滚动条（webkit） */
-
-        .exercise-list::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            width: 6px;
-        }
-        .exercise-list::-webkit-scrollbar-track,
-        body::-webkit-scrollbar-track {
-            background: rgba(15,23,42,0.8);
-        }
-        .exercise-list::-webkit-scrollbar-thumb,
-        body::-webkit-scrollbar-thumb {
-            background: rgba(55,65,81,0.9);
-            border-radius: 999px;
-        }
-        .exercise-list::-webkit-scrollbar-thumb:hover,
-        body::-webkit-scrollbar-thumb:hover {
-            background: rgba(75,85,99,0.95);
-        }
-    </style>
-</head>
-<body>
-<div class="app">
-    <div class="app-shell">
-        <header class="app-header">
-            <div class="brand">
-                <div class="brand-logo">G</div>
-                <div class="brand-meta">
-                    <div class="brand-title-main">GymGuide · Pro</div>
-                    <div class="brand-title-sub">动作库 + 器械教程 + 身体分析 · 新手到老手通用</div>
-                </div>
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { 
+  Dumbbell, Activity, ChevronRight, Info, Flame, Calculator, X, 
+  CheckCircle, AlertTriangle, ChevronDown, Sparkles, Loader2, Send, 
+  Filter, MonitorSmartphone, BookOpen 
+} from 'lucide-react';
+
+// --- 0. Gemini API Configuration ---
+const apiKey = ""; // 系统会自动注入 API Key
+
+const callGemini = async (prompt) => {
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return "抱歉，AI 教练现在有点忙，请稍后再试。";
+  }
+};
+
+// --- 1. 扩展后的数据库 (Extended Domain Data) ---
+// 数据来源参考：GymGuide Pro 代码库 & 专业健身文档
+const EXERCISE_DATA = [
+  // === 腿部 Legs ===
+  {
+    id: 'leg_press',
+    name: '坐姿推腿 (Leg Press)',
+    category: '腿部',
+    equipment: '固定器械',
+    muscles: ['股四头肌', '臀大肌', '腘绳肌'],
+    difficulty: '简单',
+    description: '通过推蹬踏板训练下肢力量，固定轨迹对腰背友好，是大部分新手踏入腿部训练的安全起点。',
+    steps: [
+      '调整座椅，使膝盖在起始位置约弯曲 90°，背部完全贴紧靠垫。',
+      '双脚与肩同宽放在踏板上，脚尖略微外展，脚跟踩实。',
+      '吸气缓慢弯曲膝盖让踏板下降，避免重量完全落到底造成冲击。',
+      '呼气用脚跟发力推起踏板，顶端膝盖保留轻微弯曲，不要锁死。'
+    ],
+    tips: [
+      '全程保持下背贴靠垫，避免腰部拱起导致腰椎受压。',
+      '膝盖与脚尖方向保持一致，避免明显内扣或外翻。',
+      '节奏建议：下放约 2 秒，推起约 1 秒，禁止弹震和猛蹬。'
+    ]
+  },
+  {
+    id: 'leg_extension',
+    name: '坐姿腿屈伸',
+    category: '腿部',
+    equipment: '固定器械',
+    muscles: ['股四头肌 (大腿前侧)'],
+    difficulty: '简单',
+    description: '孤立刺激大腿前侧，可作为腿举或深蹲后针对性补充动作。',
+    steps: [
+      '调整靠垫高度，使膝关节与机器旋转轴对齐，小腿垫在脚踝上方。',
+      '双手扶握把稳定身体，收紧大腿前侧。',
+      '呼气时伸直膝关节，将小腿向前抬起，顶端稍作停顿。',
+      '吸气时缓慢下放回起始位置，不要让配重完全落底。'
+    ],
+    tips: [
+      '重量不宜过大，膝关节有不适史的人避免大重量冲击。',
+      '发力时专注想象大腿前侧发力，不要猛甩小腿。',
+      '可在腿部训练末尾采用 12–15 次高重复做充血。'
+    ]
+  },
+  {
+    id: 'lying_leg_curl',
+    name: '俯卧腿弯举',
+    category: '腿部',
+    equipment: '固定器械',
+    muscles: ['腘绳肌 (大腿后侧)', '臀大肌'],
+    difficulty: '简单',
+    description: '主要训练大腿后侧，有助于平衡前后侧肌肉力量，保护膝关节。',
+    steps: [
+      '俯卧在器械上，膝关节与旋转轴对齐，小腿垫在脚踝上方。',
+      '收紧核心与臀部，保持髋部贴近垫子。',
+      '呼气时弯曲膝关节，将脚跟向臀部方向拉起。',
+      '吸气时缓慢还原，配重不完全落底。'
+    ],
+    tips: [
+      '避免臀部明显抬离垫子，否则会分散刺激并增加下背压力。',
+      '重量宁可轻一些也不要猛甩脚，保持全程控制。'
+    ]
+  },
+  {
+    id: 'smith_squat',
+    name: '史密斯深蹲',
+    category: '腿部',
+    equipment: '固定器械', // 史密斯机归类为固定轨迹器械
+    muscles: ['股四头肌', '臀大肌', '腘绳肌', '核心'],
+    difficulty: '中等',
+    description: '利用史密斯机固定轨迹进行深蹲，减少平衡压力，有助于新手建立下蹲模式。',
+    steps: [
+      '将杠放在斜方肌上，双脚略宽于肩，脚尖微外展。',
+      '身体微微后仰置于杠下方，收紧核心，胸部抬起。',
+      '吸气时臀部向后坐、弯曲膝盖，下蹲至大腿接近与地面平行。',
+      '脚跟发力站起，保持背部中立返回起始。'
+    ],
+    tips: [
+      '想象往后坐椅子，避免膝盖过度前移、压力集中在膝关节。',
+      '膝盖方向与脚尖保持一致，避免内扣。',
+      '初学阶段可仅用杠杆，多做低重量高次数，熟悉动作轨迹。'
+    ]
+  },
+  {
+    id: 'barbell_squat',
+    name: '杠铃深蹲',
+    category: '腿部',
+    equipment: '杠铃',
+    muscles: ['股四头肌', '臀大肌', '腘绳肌', '核心'],
+    difficulty: '困难',
+    description: '下肢综合性动作，对力量和技术要求较高，建议在有一定基础并掌握核心控制后再逐步加重。',
+    steps: [
+      '杠铃放在斜方肌位置，两手略宽于肩握杠，肩胛收紧。',
+      '双脚与肩同宽或略宽，脚尖略外展，目视前方。',
+      '吸气收紧核心，臀部向后坐并弯曲膝盖，下蹲至大腿与地面平行或略低。',
+      '脚跟发力站起，保持胸部向前向上，不要塌腰弓背。'
+    ],
+    tips: [
+      '建议先从徒手深蹲、史密斯深蹲练习，确认动作稳定再上杠铃。',
+      '全程保持腰背略微生理前凸，避免圆背和塌腰。',
+      '动作变形时不要硬顶重量，安全性优先于数字。'
+    ]
+  },
+  {
+    id: 'db_lunge',
+    name: '哑铃弓步蹲',
+    category: '腿部',
+    equipment: '哑铃',
+    muscles: ['股四头肌', '臀大肌', '腘绳肌', '臀中肌'],
+    difficulty: '中等',
+    description: '单腿主导的动作，用于改善左右腿力量差异和下肢稳定性。',
+    steps: [
+      '双手各持一只哑铃自然下垂，双脚与髋同宽站立。',
+      '向前迈一大步，前脚踩稳，后脚脚尖支撑。',
+      '弯曲双膝让身体垂直下沉，直到前腿大腿接近与地面平行。',
+      '前脚脚跟发力推回起始位置，换腿重复。'
+    ],
+    tips: [
+      '上身略前倾但不要圆背，目视前方。',
+      '下沉时前膝不要明显超过脚尖，膝盖保持与脚尖方向一致。'
+    ]
+  },
+
+  // === 胸部 Chest ===
+  {
+    id: 'chest_press_machine',
+    name: '坐姿推胸机',
+    category: '胸部',
+    equipment: '固定器械',
+    muscles: ['胸大肌', '前三角肌', '肱三头肌'],
+    difficulty: '简单',
+    description: '模拟卧推的推举动作，轨迹固定，更便于新手锁定胸部发力，安全性高。',
+    steps: [
+      '调整座椅高度，使把手大致在胸中部略低位置。',
+      '背部紧贴靠垫，双脚稳踩地面，握住把手。',
+      '吸气时缓慢让把手回到接近胸部位置。',
+      '呼气时用胸部发力将把手推向前方，肘关节接近伸直即可。'
+    ],
+    tips: [
+      '想象用胸把把手推出去，而不是仅靠手臂用力。',
+      '保持肩胛略向后收紧，有助于提高胸肌参与度。',
+      '如果肩前侧有不适，可略微调低重量和活动范围。'
+    ]
+  },
+  {
+    id: 'pec_fly_machine',
+    name: '蝴蝶机夹胸',
+    category: '胸部',
+    equipment: '固定器械',
+    muscles: ['胸大肌 (偏内侧)'],
+    difficulty: '简单',
+    description: '通过双臂合拢动作集中刺激胸内侧，适合作为推举后补充动作。',
+    steps: [
+      '调整座椅高度，使上臂与地面大致平行。',
+      '双前臂或手肘贴在垫子上，胸部挺起。',
+      '呼气时向前合拢双臂，至手肘接近相碰。',
+      '吸气时缓慢回到起始位置，保持胸部打开。'
+    ],
+    tips: [
+      '肘关节角度大致保持不变，避免变成推举动作。',
+      '顶峰收缩停顿 1 秒，感受胸肌挤压。',
+      '重量不宜过大，以可控和胸部发力感明显为主。'
+    ]
+  },
+  {
+    id: 'cable_fly',
+    name: '绳索夹胸 (站姿)',
+    category: '胸部',
+    equipment: '绳索',
+    muscles: ['胸大肌 (中下束)', '前三角肌'],
+    difficulty: '中等',
+    description: '利用绳索提供持续张力，适合塑造胸部线条和挤压感。',
+    steps: [
+      '将滑轮高度调整至胸部附近，双手各握一手柄。',
+      '一脚在前一脚在后站稳，身体略微前倾，肘关节微屈。',
+      '呼气时像抱树干一样，将双手在身体前方合拢。',
+      '吸气时缓慢还原到起始位置，保持胸部打开。'
+    ],
+    tips: [
+      '上臂始终略弯，避免在过程中大幅度改变肘角。',
+      '重量控制在能稳定站姿、不过度摇晃的范围。'
+    ]
+  },
+  {
+    id: 'flat_barbell_bench',
+    name: '平板杠铃卧推',
+    category: '胸部',
+    equipment: '杠铃',
+    muscles: ['胸大肌', '肱三头肌', '前三角肌'],
+    difficulty: '困难',
+    description: '经典的胸部力量动作之一，适合有一定基础后逐渐增加重量。',
+    steps: [
+      '仰卧在卧推凳上，眼睛大致对准杠铃。',
+      '略收肩胛和下背形成稳定支撑，双脚稳踩地面。',
+      '将杠铃从架上移出，吸气时缓慢下放至胸中部附近。',
+      '呼气时用胸和手臂发力将杠铃推回起始位置。'
+    ],
+    tips: [
+      '全程避免耸肩，保持肩胛稳定以保护肩关节。',
+      '下放时不要砸胸，保持可控的接近触碰。',
+      '较大重量时建议有同伴保护或使用安全杠。'
+    ]
+  },
+  {
+    id: 'incline_barbell_bench',
+    name: '上斜杠铃卧推',
+    category: '胸部',
+    equipment: '杠铃',
+    muscles: ['胸大肌上束', '前三角肌', '肱三头肌'],
+    difficulty: '中等',
+    description: '通过上斜角度加强对上胸的刺激，配合平板卧推可更全面地发展胸部。[Image of incline bench press anatomy]',
+    steps: [
+      '将凳子调至约 30°–45° 上斜，仰卧后眼睛大致对准杠铃。',
+      '双脚稳踩地面，略收肩胛，双手略宽于肩握杠。',
+      '吸气时将杠铃下放至锁骨与胸上部之间区域。',
+      '呼气时用上胸发力将杠铃推回起始位置。'
+    ],
+    tips: [
+      '角度不宜过高，否则肩部受力过大且胸部参与降低。',
+      '注意控制下放速度，避免对肩前侧造成冲击。'
+    ]
+  },
+  {
+    id: 'flat_db_bench',
+    name: '平板哑铃卧推',
+    category: '胸部',
+    equipment: '哑铃',
+    muscles: ['胸大肌', '肱三头肌', '前三角肌'],
+    difficulty: '中等',
+    description: '活动范围更大，自由度更高，可以微调角度适配自己的肩关节状态。',
+    steps: [
+      '坐在凳子边缘，将哑铃放在大腿上，躺下时用腿将哑铃带到胸上方。',
+      '掌心朝前，肘略外展，下背保持自然弧度。',
+      '吸气时下放哑铃至接近胸两侧。',
+      '呼气时用胸发力推起哑铃，顶端略靠拢但不碰撞。'
+    ],
+    tips: [
+      '上、下方都保持可控，不要利用惯性猛甩。',
+      '重量较大时需要有人递哑铃与保护。'
+    ]
+  },
+  {
+    id: 'db_fly',
+    name: '平板哑铃飞鸟',
+    category: '胸部',
+    equipment: '哑铃',
+    muscles: ['胸大肌 (拉伸和内收)', '前三角肌'],
+    difficulty: '中等',
+    description: '强调胸部拉伸和内收，对肩部稳定性要求较高，适合作为较轻重量的感觉型动作。',
+    steps: [
+      '仰卧在平板凳上，双手持哑铃于胸上方，掌心相对。',
+      '肘关节微屈，保持这一角度不变。',
+      '吸气时向两侧缓慢打开手臂，感受胸部拉伸。',
+      '呼气时像抱大树一样将哑铃向上合拢回到起始位置。'
+    ],
+    tips: [
+      '下放深度以不引起肩前侧明显不适为界，不要过分追求“到最底”。',
+      '全程保持重量可控，避免突然失力。'
+    ]
+  },
+
+  // === 背部 Back ===
+  {
+    id: 'lat_pulldown',
+    name: '高位下拉',
+    category: '背部',
+    equipment: '固定器械',
+    muscles: ['背阔肌', '下斜方肌', '肱二头肌'],
+    difficulty: '简单',
+    description: '模拟引体向上的拉动动作，是新手训练背阔肌的核心动作之一。',
+    steps: [
+      '坐在器械上，调整大腿压垫固定身体。',
+      '宽握横杠，微微后仰约 10–15°，胸部抬起。',
+      '呼气时将横杠拉向上胸或锁骨附近。',
+      '吸气时控制横杠缓慢回到起始位置，手臂接近伸直即可。'
+    ],
+    tips: [
+      '想象腋下夹住东西，用背而不是纯手臂发力。',
+      '避免身体大幅摇摆借力，重量过大就减轻。',
+      '肩胛下沉收紧，能更好找到背部发力。'
+    ]
+  },
+  {
+    id: 'seated_row_machine',
+    name: '坐姿划船机 (胸垫)',
+    category: '背部',
+    equipment: '固定器械',
+    muscles: ['中背 (菱形肌、斜方肌)', '背阔肌', '肱二头肌'],
+    difficulty: '简单',
+    description: '胸部有支撑，腰背负担更小，适合多数人用来练习正确的“夹肩胛”动作。',
+    steps: [
+      '调整座椅与胸垫，让胸部舒适贴靠，双脚踩稳。',
+      '双手握住把手，肩膀放松下沉。',
+      '呼气时夹紧肩胛骨，将把手拉向下胸或肋骨附近。',
+      '吸气时控制还原，手臂伸直但不耸肩。'
+    ],
+    tips: [
+      '动作顺序：先夹肩胛，再用手臂弯曲拉动。',
+      '保持头部中立，避免探头看镜子导致颈部紧张。'
+    ]
+  },
+  {
+    id: 'cable_row',
+    name: '坐姿低位划船',
+    category: '背部',
+    equipment: '绳索', // 使用绳索/自由器械分类
+    muscles: ['背阔肌', '菱形肌', '中下斜方肌'],
+    difficulty: '简单',
+    description: '提高中背厚度，帮助改善含胸圆肩问题。',
+    steps: [
+      '坐在凳子上，双脚踩踏板，双手握把，身体略前倾。',
+      '收紧核心，保持背部自然伸直。',
+      '呼气时将把手拉向腹部或肚脐附近，肩胛骨向后夹紧。',
+      '吸气时控制还原，手臂伸直但不耸肩。'
+    ],
+    tips: [
+      '避免靠腰背大幅度前后摇晃借力。',
+      '拉到最后稍作停顿，专注感受背部收缩。'
+    ]
+  },
+  {
+    id: 'straight_arm_pulldown',
+    name: '直臂下压',
+    category: '背部',
+    equipment: '绳索',
+    muscles: ['背阔肌 (下部)', '大圆肌'],
+    difficulty: '中等',
+    description: '强调背阔肌下拉轨迹的感觉，有助于练习“用背下拉而不是用手拉”。[Image of straight arm pulldown anatomy]',
+    steps: [
+      '站在高位滑轮前，双手宽握直杆，手臂伸直。',
+      '身体略前倾，核心收紧，手臂保持接近伸直不锁死。',
+      '呼气时以肩关节为轴，将直杆沿弧线压向大腿前方。',
+      '吸气时控制还原到起始位置，感受背阔被拉长。'
+    ],
+    tips: [
+      '过程中肘关节只做微小变化，避免变成弯举动作。',
+      '重量要可控，目标是建立背阔肌感觉而不是追求数字。'
+    ]
+  },
+  {
+    id: 'barbell_row',
+    name: '俯身杠铃划船',
+    category: '背部',
+    equipment: '杠铃',
+    muscles: ['背阔肌', '菱形肌', '斜方肌', '竖脊肌'],
+    difficulty: '困难',
+    description: '典型的厚背动作，对腰背稳定性要求较高，适合已有基础的人。',
+    steps: [
+      '双脚与髋同宽站立，髋关节折叠，身体前倾约 45°。',
+      '双手略宽于肩握杠，背部保持中立，核心收紧。',
+      '呼气时将杠铃拉向肚脐或下腹部。',
+      '吸气时控制下放，手臂接近伸直但不完全松脱。'
+    ],
+    tips: [
+      '全程保持下背紧张，不要塌腰圆背。',
+      '如腰部有既往不适，优先使用坐姿划船等器械替代。'
+    ]
+  },
+  {
+    id: 'db_row',
+    name: '单臂哑铃划船',
+    category: '背部',
+    equipment: '哑铃',
+    muscles: ['背阔肌', '菱形肌', '斜方肌'],
+    difficulty: '中等',
+    description: '单侧训练可纠正左右差异，对腰部压力较小，适合多数人练背入门。',
+    steps: [
+      '一侧膝盖和同侧手放在凳子上支撑，另一条腿在地上。',
+      '空闲的一手握哑铃，手臂自然下垂，背部保持平直。',
+      '呼气时沿身体侧面将哑铃拉向腰部或髋部附近。',
+      '吸气时控制哑铃下放回起始位置。'
+    ],
+    tips: [
+      '躯干避免扭转，专注背部发力而不是只用手臂硬拉。',
+      '顶峰收缩可以停顿 1 秒，增强背部挤压感。'
+    ]
+  },
+
+  // === 手臂 Arms ===
+  {
+    id: 'curl_machine',
+    name: '弯举机 (肱二头)',
+    category: '手臂',
+    equipment: '固定器械',
+    muscles: ['肱二头肌', '肱肌'],
+    difficulty: '简单',
+    description: '轨迹固定，能帮助新手学会“锁死肘部”的弯举模式，减少乱晃。',
+    steps: [
+      '调整座椅高度，使上臂舒适贴在垫子上。',
+      '双手握把，手臂自然伸直但不锁死。',
+      '呼气时弯曲肘关节，将把手卷起至接近肩部。',
+      '吸气时缓慢下放回到起始位置。'
+    ],
+    tips: [
+      '肩部放松，不要耸肩代替手臂发力。',
+      '避免借助身体摆动，专注感受二头肌收缩和拉伸。'
+    ]
+  },
+  {
+    id: 'triceps_pushdown',
+    name: '绳索下压 (肱三头)',
+    category: '手臂',
+    equipment: '绳索',
+    muscles: ['肱三头肌'],
+    difficulty: '简单',
+    description: '发展手臂后侧线条的常规动作，可与各种卧推动作组合使用。',
+    steps: [
+      '绳索固定在高位，双手握绳两端，肘部贴近身体两侧。',
+      '上臂保持稳定，只让前臂活动。',
+      '呼气时向下伸展手臂至肘关节接近伸直。',
+      '吸气时控制还原至前臂略水平的位置。'
+    ],
+    tips: [
+      '不要让肘部向前跑位，上臂固定是关键。',
+      '末端可以略微向两侧分开绳索，加强三头收缩感。'
+    ]
+  },
+  {
+    id: 'barbell_curl',
+    name: '杠铃弯举',
+    category: '手臂',
+    equipment: '杠铃',
+    muscles: ['肱二头肌', '肱肌', '肱桡肌'],
+    difficulty: '中等',
+    description: '整体提升臂围的经典动作，对力量和控制要求都较高。',
+    steps: [
+      '双脚与肩同宽站立，掌心向前握住杠铃。',
+      '上臂贴近身体两侧，肩部放松，核心收紧。',
+      '呼气时弯曲肘关节，将杠铃卷起至接近肩部。',
+      '吸气时缓慢下放杠铃回到大腿前方。'
+    ],
+    tips: [
+      '避免身体明显后仰借力，重量过大就减轻。',
+      '保持手腕中立，减少手腕压力。'
+    ]
+  },
+  {
+    id: 'db_alt_curl',
+    name: '交替哑铃弯举',
+    category: '手臂',
+    equipment: '哑铃',
+    muscles: ['肱二头肌', '肱肌'],
+    difficulty: '简单',
+    description: '单侧交替训练更容易在每一侧都建立肌肉感觉，减少强侧代偿。',
+    steps: [
+      '双手各持一只哑铃自然下垂，掌心朝向身体。',
+      '一侧手臂开始弯举，同时旋转手腕使掌心朝上。',
+      '卷起至接近肩部稍作停顿，控制下放。',
+      '左右交替进行，保持躯干稳定。'
+    ],
+    tips: [
+      '上臂尽量保持垂直，不要向前摆动。',
+      '避免利用惯性猛甩哑铃，尤其在下放阶段要有控制。'
+    ]
+  },
+
+  // === 肩部 Shoulders ===
+  {
+    id: 'shoulder_press_machine',
+    name: '坐姿推肩机',
+    category: '肩部',
+    equipment: '固定器械',
+    muscles: ['三角肌前束', '三角肌中束', '肱三头肌'],
+    difficulty: '简单',
+    description: '在固定轨迹下练习头顶推举动作，对核心稳定性要求较低，是肩推入门选择。',
+    steps: [
+      '调整座椅高度，使把手大致位于下巴到耳朵之间。',
+      '背部贴紧靠垫，双脚稳踩地面。',
+      '呼气时将把手向上推举至手臂接近伸直。',
+      '吸气时控制把手下放回起始位置。'
+    ],
+    tips: [
+      '避免耸肩，颈部保持放松。',
+      '肩关节不舒服的情况下不要在低位过度下放。'
+    ]
+  },
+  {
+    id: 'smith_shrug',
+    name: '史密斯耸肩',
+    category: '肩部',
+    equipment: '自由器械', // 史密斯机
+    muscles: ['斜方肌上束'],
+    difficulty: '简单',
+    description: '主要训练上斜方肌，有助于增强上背厚度和肩颈稳定性。[Image of trapezius muscle anatomy]',
+    steps: [
+      '站在史密斯机下方，双手略宽于肩握杠，手臂自然伸直。',
+      '呼气时向上耸肩，尽量让肩膀接近耳朵。',
+      '在最高点稍作停顿。',
+      '吸气时缓慢还原，肩膀完全放松下沉。'
+    ],
+    tips: [
+      '动作过程中保持手臂伸直，不要弯曲肘关节。',
+      '下颌保持略收，不要伸头前探。'
+    ]
+  },
+  {
+    id: 'barbell_upright_row',
+    name: '杠铃直立划船',
+    category: '肩部',
+    equipment: '杠铃',
+    muscles: ['三角肌中束', '斜方肌'],
+    difficulty: '中等',
+    description: '常见肩部/斜方复合动作，有一定肩袖压迫风险，建议采用中等重量和适中幅度。',
+    steps: [
+      '双脚与肩同宽站立，双手略窄于肩宽正握杠铃，杠铃位于大腿前。',
+      '呼气时沿身体前侧将杠铃向上拉至胸部或上腹部高度。',
+      '肘部抬高略高于手腕。',
+      '吸气时控制下放回起始位置。'
+    ],
+    tips: [
+      '如果肩部有不适史，建议减少动作幅度或替换为侧平举。',
+      '全程保持背部自然直立，不要前后摇摆。'
+    ]
+  },
+  {
+    id: 'db_shoulder_press',
+    name: '坐姿哑铃推举',
+    category: '肩部',
+    equipment: '哑铃',
+    muscles: ['三角肌前束', '三角肌中束', '肱三头肌'],
+    difficulty: '中等',
+    description: '自由度高，可微调手腕与肘部角度降低肩关节压力，是多数人适用的肩推动作。',
+    steps: [
+      '坐在有靠背的凳子上，双手持哑铃于肩部两侧。',
+      '掌心可朝前或略向内，肘部略在身体前侧。',
+      '呼气时将哑铃推至头顶上方，手臂接近伸直。',
+      '吸气时缓慢控制下放至肩部附近。'
+    ],
+    tips: [
+      '避免在底部下放过深引起肩部夹挤。',
+      '保持腰背贴靠靠背，避免明显后仰。'
+    ]
+  },
+  {
+    id: 'reverse_fly',
+    name: '俯身哑铃反向飞鸟',
+    category: '肩部',
+    equipment: '哑铃',
+    muscles: ['三角肌后束', '上背'],
+    difficulty: '中等',
+    description: '针对肩后束的关键动作，有助于平衡胸推类训练造成的肩前后力量差异。[Image of rear delt fly muscles]',
+    steps: [
+      '双脚与髋同宽站立，髋关节折叠，身体前倾接近与地面平行。',
+      '双手各持一只哑铃，自然下垂，掌心相对。',
+      '呼气时向两侧抬起手臂，至上臂接近与地面平行。',
+      '吸气时控制下放回起始位置。'
+    ],
+    tips: [
+      '背部保持中立，不过度塌腰或拱背。',
+      '哑铃重量不宜大，目标是感受后肩和上背收缩。'
+    ]
+  },
+
+  // === 有氧 Cardio ===
+  {
+    id: 'treadmill_walk',
+    name: '跑步机快走 / 慢跑',
+    category: '有氧',
+    equipment: '固定器械', // 跑步机归为固定器械类
+    muscles: ['心肺系统', '下肢耐力'],
+    difficulty: '简单',
+    description: '最常见的有氧方式之一，通过调整速度和坡度可以覆盖从恢复性走路到中高强度有氧训练。',
+    steps: [
+      '先以较慢速度行走 3–5 分钟作为热身。',
+      '逐渐调整到快走或轻微喘气但能讲话的慢跑速度。',
+      '保持肩膀放松，目视前方，避免长时间低头看手机。',
+      '训练结束前 3–5 分钟逐步降低速度作为放松。'
+    ],
+    tips: [
+      '刚开始不建议强行高速跑，先建立基础耐力和习惯。',
+      '需要扶扶手时应适当降低速度，避免虚高的速度数字。'
+    ]
+  },
+  {
+    id: 'bike_cardio',
+    name: '动感单车 / 固定脚踏车',
+    category: '有氧',
+    equipment: '固定器械',
+    muscles: ['心肺系统', '大腿前后侧'],
+    difficulty: '简单',
+    description: '对膝关节冲击相对较小，适合体重偏大或不适合高冲击跑跳的人进行有氧训练。',
+    steps: [
+      '调整坐垫高度，让脚踩到底时膝盖略弯。',
+      '先以低阻力踩踏 3–5 分钟热身。',
+      '根据心率和呼吸情况逐步提高阻力或节奏。',
+      '结束前逐渐降低阻力和节奏进行放松。'
+    ],
+    tips: [
+      '保持脚尖和膝盖方向一致，减少膝关节扭转压力。',
+      '上半身可以略微前倾，但避免塌腰耸肩。'
+    ]
+  },
+  {
+    id: 'jump_rope',
+    name: '跳绳 (间歇)',
+    category: '有氧',
+    equipment: '自由器械',
+    muscles: ['心肺系统', '小腿肌群', '协调性'],
+    difficulty: '中等',
+    description: '高效燃脂的有氧形式之一，配合间歇设计可以控制关节压力并提高训练趣味性。',
+    steps: [
+      '根据身高选择合适长度的跳绳，双脚与髋同宽站立。',
+      '主要用手腕甩绳，脚尖轻点地面起跳。',
+      '可以采用 30 秒跳 + 30 秒休息的间歇形式循环。',
+      '根据体能逐步增加工作时间和总时长。'
+    ],
+    tips: [
+      '体重较大或膝踝有旧伤者不建议长时间高强度跳绳，可改用单车或椭圆机。',
+      '着地时膝盖微屈，减缓冲击。'
+    ]
+  }
+];
+
+const CATEGORIES = ['全部', '胸部', '背部', '腿部', '肩部', '手臂', '有氧'];
+const EQUIPMENT_TYPES = ['全部', '固定器械', '杠铃', '哑铃', '绳索', '自由器械']; // 统一下拉菜单
+
+// --- 2. 组件 Components ---
+
+// 2.1 身体分析组件 (Updated Logic)
+const BodyAnalyzer = () => {
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [result, setResult] = useState(null);
+  const [aiPlan, setAiPlan] = useState('');
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const planRef = useRef(null);
+
+  const calculate = () => {
+    if (!height || !weight) return;
+    const h = parseFloat(height) / 100; 
+    const w = parseFloat(weight); 
+    const bmi = (w / (h * h)).toFixed(1);
+    
+    let type = '';
+    let advice = '';
+    let proteinRange = '';
+    let strategy = '';
+    let planDetails = [];
+
+    // New logic based on GymGuide Pro
+    if (bmi < 18.5) {
+      type = '偏瘦';
+      strategy = '增肌优先 (Bulk)';
+      proteinRange = `${(w * 1.6).toFixed(0)} - ${(w * 2.2).toFixed(0)} g`;
+      advice = '优先增肌，兼顾全身力量和少量有氧，防止体重继续下降。饮食上保证足够碳水和蛋白，睡眠尽量充足。';
+      planDetails = [
+        'Day 1: 胸 + 三头 + 15 分钟跑步机快走',
+        'Day 2: 背 + 二头 + 核心（平板支撑、死虫等）',
+        'Day 3: 腿 + 肩 + 10–15 分钟低强度有氧'
+      ];
+    } else if (bmi < 25) {
+      type = '正常范围';
+      strategy = '综合提升 (Recomp)';
+      proteinRange = `${(w * 1.6).toFixed(0)} - ${(w * 2.2).toFixed(0)} g`;
+      advice = '力量和有氧结合，目标是让围度和线条更好看。如果想偏向减脂，略微控制总热量；如果偏向增肌，适当增加摄入。';
+      planDetails = [
+        'Day 1: 胸 + 三头 + 20 分钟中等强度有氧',
+        'Day 2: 背 + 二头 + 核心',
+        'Day 3: 腿 + 肩 + 20 分钟有氧',
+        'Day 4 (可选): 全身复合动作 + 轻度有氧'
+      ];
+    } else if (bmi < 30) {
+      type = '偏重';
+      strategy = '减脂优先 (Cut)';
+      proteinRange = `${(w * 1.6).toFixed(0)} - ${(w * 2.0).toFixed(0)} g`; // 偏重人群系数略低以防总热量过高，但仍需高蛋白饱腹
+      advice = '以减脂为主，同时保留力量训练，避免“只瘦体重不瘦体型”。饮食保持轻微热量缺口，控制油炸和高糖。';
+      planDetails = [
+        'Day 1: 上肢力量（胸/背/手臂复合）+ 25–35 分钟有氧',
+        'Day 2: 下肢力量（腿举、弓步等）+ 20–30 分钟有氧',
+        'Day 3: 纯有氧 + 核心 (30–45 分钟)',
+        'Day 4: 全身循环器械训练 + 20 分钟有氧'
+      ];
+    } else {
+      type = '肥胖';
+      strategy = '安全减脂';
+      proteinRange = `${(w * 1.2).toFixed(0)} - ${(w * 1.5).toFixed(0)} g`; // 大体重人群按体重算蛋白可能过高，适当降低系数
+      advice = '低冲击有氧 + 器械力量为主，循序渐进减脂，安全性优先。如有关节问题，请避免高冲击跳跃。';
+      planDetails = [
+        'Day 1: 全身器械力量 + 15–20 分钟低冲击有氧',
+        'Day 2: 快走 / 椭圆机 / 单车 30–45 分钟',
+        'Day 3: 休息或轻活动',
+        'Day 4: 全身器械力量 + 20–30 分钟有氧',
+        'Day 5: 中等强度有氧 30 分钟'
+      ];
+    }
+
+    setResult({ bmi, type, protein: proteinRange, advice, strategy, planDetails });
+    setAiPlan(''); 
+  };
+
+  const generateAIPlan = async () => {
+    if (!result) return;
+    setIsGeneratingPlan(true);
+    const prompt = `用户数据: 身高${height}cm, 体重${weight}kg, BMI${result.bmi} (${result.type})。目标: ${result.strategy}。请生成: 1.✨今日训练细节(基于我推荐的计划框架，给具体的动作组数); 2.🥗今日饮食建议(三餐简述)。中文,简洁,Emoji风格。`;
+    const text = await callGemini(prompt);
+    setAiPlan(text);
+    setIsGeneratingPlan(false);
+    setTimeout(() => planRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+  };
+
+  return (
+    <div className="p-4 md:p-8 max-w-3xl mx-auto pb-24 overflow-y-auto scroll-smooth">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 text-white shadow-xl mb-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500 rounded-full opacity-20 blur-xl"></div>
+        <h2 className="text-3xl font-bold mb-2 flex items-center relative z-10">
+          <Calculator className="mr-3 w-8 h-8 text-blue-400" /> 智能分析
+        </h2>
+        <p className="opacity-80 relative z-10">基于身体数据，定制科学的训练与饮食策略。</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-slate-100">
+          <label className="block text-xs font-bold text-slate-400 uppercase mb-1">身高 (CM)</label>
+          <input 
+            type="number" value={height} onChange={(e) => setHeight(e.target.value)}
+            className="w-full text-xl font-bold bg-transparent focus:outline-none text-slate-800 placeholder-slate-300"
+            placeholder="175"
+          />
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-slate-100">
+          <label className="block text-xs font-bold text-slate-400 uppercase mb-1">体重 (KG)</label>
+          <input 
+            type="number" value={weight} onChange={(e) => setWeight(e.target.value)}
+            className="w-full text-xl font-bold bg-transparent focus:outline-none text-slate-800 placeholder-slate-300"
+            placeholder="70"
+          />
+        </div>
+        <button 
+          onClick={calculate}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95 flex items-center justify-center py-4 md:py-0"
+        >
+          生成报告 <ChevronRight className="ml-1 w-5 h-5" />
+        </button>
+      </div>
+
+      {result && (
+        <div className="animate-fade-in space-y-6">
+          {/* Results Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center">
+              <div className="text-xs text-slate-400 mb-1">BMI</div>
+              <div className="text-2xl font-black text-slate-800">{result.bmi}</div>
             </div>
-            <div class="app-badges">
-                <div class="badge-pill highlight">
-                    <span class="icon">🏋️‍♀️</span>
-                    <span>动作查阅·器械使用指导</span>
-                </div>
-                <div class="badge-pill">
-                    <span class="icon">📊</span>
-                    <span>BMI / 蛋白 / 训练方向分析</span>
-                </div>
-                <div class="badge-pill">
-                    <span class="icon">📱</span>
-                    <span>适配手机 / 平板 / PC</span>
-                </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center">
+              <div className="text-xs text-slate-400 mb-1">体型</div>
+              <div className={`text-lg font-bold ${result.type === '正常范围' ? 'text-green-600' : 'text-orange-500'}`}>{result.type}</div>
             </div>
-        </header>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center col-span-2 md:col-span-2 flex flex-col justify-center">
+              <div className="text-xs text-slate-400 mb-1">建议蛋白质/天</div>
+              <div className="text-2xl font-black text-purple-600">{result.protein}</div>
+            </div>
+          </div>
 
-        <div class="tab-header">
-            <button class="tab-button active" data-target="librarySection">
-                <span class="emoji">📚</span>
-                <span>动作库 & 器械教程</span>
+          {/* Strategy Card */}
+          <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+            <div className="bg-slate-50 p-4 border-b border-slate-100 flex items-center">
+              <Activity className="w-5 h-5 text-blue-500 mr-2" />
+              <span className="font-bold text-slate-700">当前策略: {result.strategy}</span>
+            </div>
+            <div className="p-6">
+              <p className="text-slate-600 leading-relaxed mb-4 text-sm bg-slate-50 p-3 rounded-lg border border-slate-100">
+                {result.advice}
+              </p>
+
+              <div className="mb-6">
+                <h4 className="font-bold text-slate-800 mb-3 text-sm">推荐周计划示例：</h4>
+                <ul className="space-y-2">
+                  {result.planDetails.map((detail, idx) => (
+                    <li key={idx} className="text-sm text-slate-600 flex items-start">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 mr-2 shrink-0"></div>
+                      {detail}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              {!aiPlan ? (
+                <button 
+                  onClick={generateAIPlan}
+                  disabled={isGeneratingPlan}
+                  className="w-full py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:shadow-xl transition-all flex items-center justify-center group"
+                >
+                  {isGeneratingPlan ? <Loader2 className="animate-spin mr-2" /> : <Sparkles className="mr-2 group-hover:rotate-12 transition-transform" />}
+                  {isGeneratingPlan ? 'AI 正在思考中...' : '生成今日详细 AI 计划'}
+                </button>
+              ) : (
+                <div ref={planRef} className="bg-slate-50 rounded-xl p-5 border border-slate-100 animate-slide-up">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-bold text-slate-800 flex items-center"><Sparkles className="w-4 h-4 text-purple-500 mr-2"/> AI 推荐方案</h3>
+                    <button onClick={generateAIPlan} className="text-xs text-slate-400 hover:text-blue-600">重新生成</button>
+                  </div>
+                  <div className="prose prose-sm max-w-none text-slate-600 whitespace-pre-line leading-7">
+                    {aiPlan}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 2.2 动作库组件 (Modernized & Responsive)
+const ExerciseLibrary = () => {
+  const [selectedCategory, setSelectedCategory] = useState('全部');
+  const [selectedEquipment, setSelectedEquipment] = useState('全部');
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // AI Chat State
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiAnswer, setAiAnswer] = useState('');
+  const [isAskingAi, setIsAskingAi] = useState(false);
+  const chatEndRef = useRef(null);
+
+  const filteredExercises = useMemo(() => {
+    return EXERCISE_DATA.filter(ex => {
+      const matchCat = selectedCategory === '全部' || ex.category === selectedCategory;
+      // 兼容新的数据类型映射
+      const matchEquip = selectedEquipment === '全部' || ex.equipment.includes(selectedEquipment);
+      const matchSearch = ex.name.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchCat && matchEquip && matchSearch;
+    });
+  }, [selectedCategory, selectedEquipment, searchQuery]);
+
+  const handleAskAI = async () => {
+    if (!aiQuestion.trim()) return;
+    setIsAskingAi(true);
+    setAiAnswer(''); 
+    const prompt = `背景:用户正在看动作“${selectedExercise.name}”。描述:${selectedExercise.description}。用户问:“${aiQuestion}”。请做为资深教练回答(中文,150字内,专业且鼓励)。`;
+    const answer = await callGemini(prompt);
+    setAiAnswer(answer);
+    setIsAskingAi(false);
+    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+  };
+
+  const closeExerciseModal = () => {
+    setSelectedExercise(null);
+    setAiQuestion('');
+    setAiAnswer('');
+    setIsAskingAi(false);
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-slate-50/50 relative">
+      {/* Sticky Header with Glassmorphism */}
+      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm px-4 py-3">
+        {/* Filters Row 1: Categories */}
+        <div className="flex overflow-x-auto pb-2 mb-2 scrollbar-hide space-x-2 md:justify-center">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all active:scale-95 ${
+                selectedCategory === cat 
+                  ? 'bg-slate-800 text-white shadow-md shadow-slate-300' 
+                  : 'bg-white text-slate-600 border border-slate-100 hover:bg-slate-50'
+              }`}
+            >
+              {cat}
             </button>
-            <button class="tab-button" data-target="analysisSection">
-                <span class="emoji">📊</span>
-                <span>身高体重分析 & 训练建议</span>
+          ))}
+        </div>
+        
+        {/* Filters Row 2: Search & Equipment */}
+        <div className="flex flex-col md:flex-row items-center gap-3 max-w-4xl mx-auto w-full">
+           <div className="relative w-full md:w-48 shrink-0">
+             <select 
+              value={selectedEquipment}
+              onChange={(e) => setSelectedEquipment(e.target.value)}
+              className="w-full appearance-none bg-slate-100 border-0 text-slate-700 text-sm rounded-xl p-3 pr-8 focus:ring-2 focus:ring-blue-500 font-medium"
+             >
+               {EQUIPMENT_TYPES.map(eq => <option key={eq} value={eq}>{eq === '全部' ? '所有器械' : eq}</option>)}
+             </select>
+             <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
+           </div>
+           <div className="relative flex-1 w-full">
+             <input 
+              type="text" 
+              placeholder="搜索动作，例如：深蹲、战绳..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-slate-100 border-0 text-slate-700 text-sm rounded-xl p-3 pl-4 focus:ring-2 focus:ring-blue-500"
+             />
+           </div>
+        </div>
+      </div>
+
+      {/* Responsive Grid for Exercises */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 touch-pan-y" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto">
+          {filteredExercises.length === 0 ? (
+            <div className="col-span-full text-center py-20">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Filter className="w-8 h-8 text-slate-300" />
+              </div>
+              <p className="text-slate-400">没有找到匹配的动作</p>
+            </div>
+          ) : (
+            filteredExercises.map(exercise => (
+              <div 
+                key={exercise.id}
+                onClick={() => setSelectedExercise(exercise)}
+                className="group bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between h-full"
+              >
+                <div className="mb-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider ${
+                      exercise.difficulty === '简单' ? 'bg-green-50 text-green-600' : 
+                      exercise.difficulty === '中等' ? 'bg-yellow-50 text-yellow-600' : 
+                      'bg-red-50 text-red-600'
+                    }`}>
+                      {exercise.difficulty}
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                    </div>
+                  </div>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">{exercise.name}</h3>
+                  <p className="text-xs text-slate-500 line-clamp-2">{exercise.description}</p>
+                </div>
+                
+                <div className="flex items-center gap-2 pt-4 border-t border-slate-50">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-50 text-xs font-medium text-slate-600">
+                    <Dumbbell className="w-3 h-3 mr-1.5 text-slate-400" /> 
+                    {exercise.equipment}
+                  </span>
+                  <span className="text-slate-300 text-xs">|</span>
+                  <span className="text-xs font-medium text-blue-600">
+                    {exercise.category}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Modern Fullscreen Modal for Details */}
+      {selectedExercise && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-6 bg-slate-900/40 backdrop-blur-sm transition-all" onClick={closeExerciseModal}>
+          <div 
+            className="bg-white w-full max-h-[90vh] md:h-auto md:max-h-[85vh] md:max-w-2xl md:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden animate-slide-up"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-6 md:p-8 relative shrink-0">
+              <button onClick={closeExerciseModal} className="absolute right-6 top-6 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-md">
+                <X className="w-5 h-5" />
+              </button>
+              <h3 className="text-2xl md:text-3xl font-black mb-2">{selectedExercise.name}</h3>
+              <div className="flex flex-wrap gap-2 text-sm opacity-90">
+                <span className="px-3 py-1 bg-white/10 rounded-lg backdrop-blur-md">{selectedExercise.equipment}</span>
+                <span className="px-3 py-1 bg-white/10 rounded-lg backdrop-blur-md text-blue-200">{selectedExercise.muscles.join(' & ')}</span>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div 
+              className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 bg-white touch-pan-y" 
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {/* Steps */}
+              <div>
+                <h4 className="font-bold text-slate-800 mb-4 flex items-center text-lg">
+                  <CheckCircle className="w-5 h-5 mr-2 text-green-500" /> 动作步骤
+                </h4>
+                <div className="space-y-4">
+                  {selectedExercise.steps.map((step, idx) => (
+                    <div key={idx} className="flex">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center mt-0.5 mr-3 border border-slate-200">
+                        {idx + 1}
+                      </div>
+                      <p className="text-slate-600 leading-relaxed">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tips */}
+              <div>
+                <h4 className="font-bold text-slate-800 mb-4 flex items-center text-lg">
+                  <AlertTriangle className="w-5 h-5 mr-2 text-amber-500" /> 避坑指南
+                </h4>
+                <div className="grid grid-cols-1 gap-3">
+                  {selectedExercise.tips.map((tip, idx) => (
+                    <div key={idx} className="bg-amber-50 p-4 rounded-xl border border-amber-100 flex items-start text-amber-800 text-sm leading-relaxed">
+                      <Info className="w-4 h-4 mr-2 shrink-0 mt-0.5" />
+                      {tip}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI Coach */}
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-5 md:p-6 border border-indigo-100 mb-safe-bottom">
+                <h4 className="font-bold text-indigo-800 mb-2 flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-indigo-600" /> AI 随身助教
+                </h4>
+                <p className="text-sm text-indigo-600/80 mb-4">对动作有疑问？比如“肩膀疼”、“没有发力感”，随时提问。</p>
+                
+                {aiAnswer && (
+                  <div className="mb-4 bg-white p-4 rounded-xl text-slate-700 shadow-sm border border-indigo-50 animate-fade-in">
+                    <div className="flex items-center mb-2 text-indigo-600 font-bold text-xs uppercase tracking-wider">
+                      <MonitorSmartphone className="w-3 h-3 mr-1" /> IronPath AI
+                    </div>
+                    {aiAnswer}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={aiQuestion}
+                    onChange={(e) => setAiQuestion(e.target.value)}
+                    placeholder="输入你的问题..."
+                    className="flex-1 text-sm p-3 rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAskAI()}
+                  />
+                  <button 
+                    onClick={handleAskAI}
+                    disabled={isAskingAi || !aiQuestion.trim()}
+                    className="bg-indigo-600 text-white p-3 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-md shadow-indigo-200"
+                  >
+                    {isAskingAi ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 2.3 欢迎页 (Welcome View)
+const WelcomeView = ({ onStart }) => (
+  <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-slate-900 text-white relative overflow-hidden">
+    {/* Decorative Blobs */}
+    <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2 animate-blob"></div>
+    <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2 animate-blob animation-delay-2000"></div>
+
+    <div className="relative z-10 flex flex-col items-center">
+      <div className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-blue-900/50 transform rotate-3 hover:rotate-6 transition-transform duration-500">
+        <Flame className="w-12 h-12 text-white" />
+      </div>
+      <h1 className="text-4xl md:text-5xl font-black mb-3 tracking-tight">IronPath</h1>
+      <h2 className="text-lg md:text-xl font-medium text-slate-400 mb-10 tracking-wide">钢铁之路 · 智能健身指南</h2>
+      <div className="flex items-center gap-2 text-slate-400 text-sm mb-10 bg-slate-800/50 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-700">
+        <BookOpen className="w-4 h-4" />
+        <span>已收录 40+ 专业器械与动作指南</span>
+      </div>
+      
+      <div className="space-y-4 w-full max-w-xs">
+        <button 
+          onClick={onStart}
+          className="w-full bg-white text-slate-900 font-bold py-4 px-8 rounded-2xl shadow-xl hover:scale-105 hover:shadow-2xl transition-all flex items-center justify-center group"
+        >
+          开始变强 <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </button>
+        <p className="text-xs text-slate-500">v2.5 | 专业知识库已更新</p>
+      </div>
+    </div>
+  </div>
+);
+
+// --- 3. 主应用组件 Main App ---
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('welcome'); 
+
+  if (activeTab === 'welcome') return <WelcomeView onStart={() => setActiveTab('library')} />;
+
+  return (
+    <div className="h-screen w-full bg-slate-100 flex flex-col font-sans overflow-hidden">
+      {/* Main Layout Container - Responsive */}
+      <div className="flex-1 flex overflow-hidden w-full max-w-[1600px] mx-auto bg-white md:shadow-2xl md:my-4 md:rounded-[2rem] border-slate-200 relative">
+        
+        {/* Desktop Sidebar Navigation (Visible only on large screens) */}
+        <div className="hidden md:flex flex-col w-24 lg:w-64 bg-slate-900 text-white pt-8 shrink-0 z-30">
+          <div className="flex items-center justify-center lg:justify-start lg:px-8 mb-10">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-900/50">
+              <Flame className="w-6 h-6 text-white" />
+            </div>
+            <span className="hidden lg:block ml-3 font-bold text-xl tracking-tight">IronPath</span>
+          </div>
+          
+          <div className="flex-1 space-y-2 px-4">
+            <button 
+              onClick={() => setActiveTab('library')}
+              className={`w-full flex items-center p-3 rounded-xl transition-all ${activeTab === 'library' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+            >
+              <Dumbbell className="w-6 h-6 lg:mr-3" />
+              <span className="hidden lg:block font-medium">动作库</span>
             </button>
+            <button 
+              onClick={() => setActiveTab('analysis')}
+              className={`w-full flex items-center p-3 rounded-xl transition-all ${activeTab === 'analysis' ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+            >
+              <Calculator className="w-6 h-6 lg:mr-3" />
+              <span className="hidden lg:block font-medium">智能分析</span>
+            </button>
+          </div>
+          
+          <div className="p-6 text-center lg:text-left text-xs text-slate-500">
+            <span className="hidden lg:inline">Made for Gains 💪</span>
+          </div>
         </div>
 
-        <p class="app-description">
-            使用方式：健身房遇到不熟悉的器械 → 打开「动作库」按部位筛选动作，查看动作要领与注意事项；刚开始训练时可以用「分析」模块估算 BMI、蛋白摄入，并参考示例训练安排。
-        </p>
-
-        <main>
-            <!-- 动作库 -->
-            <section id="librarySection" class="tab-section">
-                <div class="section-title-row">
-                    <div class="section-title">
-                        <span>🎯 动作库 / 器械使用</span>
-                        <span class="section-title-badge">腿 / 胸 / 背 / 手臂 / 肩 / 有氧 · 固定器械 / 自由器械 / 杠铃 / 哑铃</span>
-                    </div>
-                </div>
-                <div class="section-desc">
-                    左侧按「训练部位 → 器械类型」筛选动作，也可用搜索框按名称/肌群搜索；点击某个动作即可在右侧查看详细说明和注意事项。
-                </div>
-
-                <div class="exercise-layout">
-                    <!-- 左侧：分类 + 列表 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">训练部位 & 器械分类</div>
-                                <div class="card-subtitle">适合健身新手现场查动作，也方便老手复习标准动作轨迹</div>
-                            </div>
-                            <span class="chip">建议：每个器械先用轻重量熟悉动作</span>
-                        </div>
-
-                        <div class="bodypart-list" id="bodyPartList"></div>
-
-                        <div class="category-row">
-                            <div class="category-list" id="categoryList"></div>
-                            <div class="exercise-search">
-                                <input id="exerciseSearch" class="search-input" type="text"
-                                       placeholder="搜索动作 / 肌群">
-                            </div>
-                        </div>
-
-                        <div class="exercise-list" id="exerciseList"></div>
-                    </div>
-
-                    <!-- 右侧：动作详情 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">动作说明 & 器械使用要点</div>
-                                <div class="card-subtitle">包含：训练肌群 · 器械设置 · 标准动作步骤 · 安全提示</div>
-                            </div>
-                            <span class="chip success">实战建议：先学动作，再上重量</span>
-                        </div>
-
-                        <div id="exerciseDetail" class="exercise-detail">
-                            <p class="placeholder-text">
-                                请在左侧选择一个动作。建议从「腿 · 固定器械」或「胸 · 固定器械」开始，先熟悉腿举、坐姿推胸等基础动作，再逐步尝试自由器械和杠铃动作。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 身体分析 -->
-            <section id="analysisSection" class="tab-section hidden">
-                <div class="section-title-row">
-                    <div class="section-title">
-                        <span>📊 身体数据分析 & 训练方向</span>
-                        <span class="section-title-badge">输入身高体重 → 计算 BMI、蛋白摄入、给出训练优先方向和示例计划</span>
-                    </div>
-                </div>
-                <div class="section-desc">
-                    此模块基于通用 BMI 标准和 1.6–2.2 g/kg 蛋白建议，仅提供训练决策参考（例如先减脂还是先增肌），不替代医生和营养师建议。
-                </div>
-
-                <div class="analysis-layout">
-                    <!-- 左侧：表单 -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">输入基础身体数据</div>
-                                <div class="card-subtitle">目前使用身高 / 体重，如后续需要可以扩展到体脂率等指标</div>
-                            </div>
-                        </div>
-
-                        <form id="analysisForm" class="analysis-form">
-                            <div class="form-row">
-                                <label for="heightInput">身高 <span style="opacity: 0.8;">(cm)</span></label>
-                                <div class="input-inline">
-                                    <input id="heightInput" type="number" min="100" max="230" step="0.5"
-                                           placeholder="例如：175">
-                                    <span class="unit">cm</span>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <label for="weightInput">体重 <span style="opacity: 0.8;">(kg)</span></label>
-                                <div class="input-inline">
-                                    <input id="weightInput" type="number" min="30" max="200" step="0.1"
-                                           placeholder="例如：70">
-                                    <span class="unit">kg</span>
-                                </div>
-                            </div>
-
-                            <button class="submit-btn" type="submit">
-                                <span class="icon">⚙️</span>
-                                <span>开始分析并生成训练建议</span>
-                            </button>
-
-                            <div class="hint-text">
-                                提示：如果你完全零基础，建议在执行任何高强度训练计划前，先做一次基础体检，并从轻重量、低冲击有氧开始，给身体一个适应过程。
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- 右侧：结果 -->
-                    <div class="card analysis-result-card hidden" id="analysisOutput">
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title">分析结果 & 建议训练路径</div>
-                                <div class="card-subtitle">包括当前体重状态、蛋白摄入区间、训练优先方向和示例训练安排</div>
-                            </div>
-                        </div>
-
-                        <div class="result-grid">
-                            <div class="result-pill">
-                                <div class="result-label">BMI 指数</div>
-                                <div class="result-value" id="bmiResult">--</div>
-                                <div class="result-desc" id="bmiStatus">--</div>
-                            </div>
-                            <div class="result-pill">
-                                <div class="result-label">推荐每日蛋白摄入</div>
-                                <div class="result-value" id="proteinResult">-- g</div>
-                                <div class="result-desc">
-                                    粗略按 1.6–2.2 g/kg 估算，适用于有一定训练需求人群；如肾脏疾病等情况需遵医嘱。
-                                </div>
-                            </div>
-                            <div class="result-pill">
-                                <div class="result-label">训练优先方向</div>
-                                <div class="result-value" id="trainingFocus">--</div>
-                                <div class="result-desc">
-                                    基于 BMI 的整体趋势判断，仅做方向性建议，可结合镜子和围度变化动态调整。
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="plan-block" id="planResult"></div>
-
-                        <div class="safety-note">
-                            安全提示：出现胸闷、头晕、恶心、异常心率、尖锐关节痛等不适时，应立即停止训练，并视情况就医。力量动作以「能控制动作、不借力乱抖」为前提逐步加重，避免急于求成。
-                        </div>
-                    </div>
-                </div>
-            </section>
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-hidden relative bg-slate-50/50 flex flex-col w-full">
+          {activeTab === 'library' && <ExerciseLibrary />}
+          {activeTab === 'analysis' && <BodyAnalyzer />}
         </main>
+      </div>
+
+      {/* Mobile Bottom Navigation Bar (Hidden on desktop) */}
+      <nav className="md:hidden bg-white/90 backdrop-blur-lg border-t border-slate-200 h-[calc(60px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] flex items-center justify-around shrink-0 z-40 fixed bottom-0 w-full">
+        <button 
+          onClick={() => setActiveTab('library')}
+          className={`flex flex-col items-center justify-center w-1/2 h-full transition-all ${activeTab === 'library' ? 'text-blue-600' : 'text-slate-400'}`}
+        >
+          <div className={`p-1.5 rounded-xl ${activeTab === 'library' ? 'bg-blue-50' : 'bg-transparent'}`}>
+            <Dumbbell className={`w-6 h-6 ${activeTab === 'library' ? 'fill-current' : ''}`} />
+          </div>
+          <span className="text-[10px] font-medium mt-1">动作库</span>
+        </button>
+        
+        <button 
+          onClick={() => setActiveTab('analysis')}
+          className={`flex flex-col items-center justify-center w-1/2 h-full transition-all ${activeTab === 'analysis' ? 'text-blue-600' : 'text-slate-400'}`}
+        >
+          <div className={`p-1.5 rounded-xl ${activeTab === 'analysis' ? 'bg-blue-50' : 'bg-transparent'}`}>
+            <Activity className={`w-6 h-6 ${activeTab === 'analysis' ? 'fill-current' : ''}`} />
+          </div>
+          <span className="text-[10px] font-medium mt-1">智能分析</span>
+        </button>
+      </nav>
+
+      {/* Global Styles */}
+      <style>{`
+        @keyframes slide-up {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .mb-safe-bottom { margin-bottom: env(safe-area-inset-bottom); }
+      `}</style>
     </div>
-</div>
+  );
+};
 
-<script>
-    // ---------------------------
-    // 基础配置：部位与分类
-    // ---------------------------
-    const BODY_PARTS = {
-        legs:      { label: "腿",   icon: "🦵" },
-        chest:     { label: "胸",   icon: "🏋️" },
-        back:      { label: "背",   icon: "🧱" },
-        arms:      { label: "手臂", icon: "💪" },
-        shoulders: { label: "肩",   icon: "🎯" },
-        cardio:    { label: "有氧", icon: "❤️" }
-    };
-
-    const CATEGORY_LABELS = {
-        machine: "固定器械",
-        free:    "自由器械 / 绳索",
-        barbell: "杠铃",
-        dumbbell:"哑铃"
-    };
-
-    const CATEGORY_ORDER = ["machine", "free", "barbell", "dumbbell"];
-
-    // ---------------------------
-    // 动作数据（参考了肌肉网动作大全 & 常见器械动作合集，进行结构化整理）:contentReference[oaicite:0]{index=0}
-    // bodyPart: legs / chest / back / arms / shoulders / cardio
-    // category: machine / free / barbell / dumbbell
-    // ---------------------------
-    const EXERCISES = [
-        // === 腿部 ===
-        {
-            id: "leg_press",
-            bodyPart: "legs",
-            category: "machine",
-            name: "坐姿推腿（Leg Press）",
-            equipment: "腿举机 · 固定器械",
-            targetMuscles: "股四头肌、臀大肌、腘绳肌",
-            difficulty: "新手友好",
-            description: "通过推蹬踏板训练下肢力量，固定轨迹对腰背友好，是大部分新手踏入腿部训练的安全起点。",
-            steps: [
-                "调整座椅，使膝盖在起始位置约弯曲 90°，背部完全贴紧靠垫。",
-                "双脚与肩同宽放在踏板上，脚尖略微外展，脚跟踩实。",
-                "吸气缓慢弯曲膝盖让踏板下降，避免重量完全落到底造成冲击。",
-                "呼气用脚跟发力推起踏板，顶端膝盖保留轻微弯曲，不要锁死。"
-            ],
-            tips: [
-                "全程保持下背贴靠垫，避免腰部拱起导致腰椎受压。",
-                "膝盖与脚尖方向保持一致，避免明显内扣或外翻。",
-                "节奏建议：下放约 2 秒，推起约 1 秒，禁止弹震和猛蹬。"
-            ]
-        },
-        {
-            id: "leg_extension",
-            bodyPart: "legs",
-            category: "machine",
-            name: "腿屈伸（Leg Extension）",
-            equipment: "腿屈伸机 · 固定器械",
-            targetMuscles: "股四头肌（大腿前侧）",
-            difficulty: "新手-中级",
-            description: "孤立刺激大腿前侧，可作为腿举或深蹲后针对性补充动作。",
-            steps: [
-                "调整靠垫高度，使膝关节与机器旋转轴对齐，小腿垫在脚踝上方。",
-                "双手扶握把稳定身体，收紧大腿前侧。",
-                "呼气时伸直膝关节，将小腿向前抬起，顶端稍作停顿。",
-                "吸气时缓慢下放回起始位置，不要让配重完全落底。"
-            ],
-            tips: [
-                "重量不宜过大，膝关节有不适史的人避免大重量冲击。",
-                "发力时专注想象大腿前侧发力，不要猛甩小腿。",
-                "可在腿部训练末尾采用 12–15 次高重复做充血。"
-            ]
-        },
-        {
-            id: "lying_leg_curl",
-            bodyPart: "legs",
-            category: "machine",
-            name: "俯卧腿弯举",
-            equipment: "腿弯举机 · 固定器械",
-            targetMuscles: "腘绳肌（大腿后侧）、臀大肌",
-            difficulty: "新手-中级",
-            description: "主要训练大腿后侧，有助于平衡前后侧肌肉力量，保护膝关节。",
-            steps: [
-                "俯卧在器械上，膝关节与旋转轴对齐，小腿垫在脚踝上方。",
-                "收紧核心与臀部，保持髋部贴近垫子。",
-                "呼气时弯曲膝关节，将脚跟向臀部方向拉起。",
-                "吸气时缓慢还原，配重不完全落底。"
-            ],
-            tips: [
-                "避免臀部明显抬离垫子，否则会分散刺激并增加下背压力。",
-                "重量宁可轻一些也不要猛甩脚，保持全程控制。",
-                "可与腿屈伸搭配使用，前侧和后侧都得到充分刺激。"
-            ]
-        },
-        {
-            id: "smith_squat",
-            bodyPart: "legs",
-            category: "free",
-            name: "史密斯深蹲",
-            equipment: "史密斯机 · 自由器械",
-            targetMuscles: "股四头肌、臀大肌、腘绳肌、核心",
-            difficulty: "新手-中级",
-            description: "利用史密斯机固定轨迹进行深蹲，减少平衡压力，有助于新手建立下蹲模式。",
-            steps: [
-                "将杠放在斜方肌上，双脚略宽于肩，脚尖微外展。",
-                "身体微微后仰置于杠下方，收紧核心，胸部抬起。",
-                "吸气时臀部向后坐、弯曲膝盖，下蹲至大腿接近与地面平行。",
-                "脚跟发力站起，保持背部中立返回起始。"
-            ],
-            tips: [
-                "想象往后坐椅子，避免膝盖过度前移、压力集中在膝关节。",
-                "膝盖方向与脚尖保持一致，避免内扣。",
-                "初学阶段可仅用杠杆，多做低重量高次数，熟悉动作轨迹。"
-            ]
-        },
-        {
-            id: "barbell_squat",
-            bodyPart: "legs",
-            category: "barbell",
-            name: "杠铃深蹲",
-            equipment: "杠铃 + 深蹲架",
-            targetMuscles: "股四头肌、臀大肌、腘绳肌、核心、下背",
-            difficulty: "中级",
-            description: "下肢综合性动作，对力量和技术要求较高，建议在有一定基础并掌握核心控制后再逐步加重。",
-            steps: [
-                "杠铃放在斜方肌位置，两手略宽于肩握杠，肩胛收紧。",
-                "双脚与肩同宽或略宽，脚尖略外展，目视前方。",
-                "吸气收紧核心，臀部向后坐并弯曲膝盖，下蹲至大腿与地面平行或略低。",
-                "脚跟发力站起，保持胸部向前向上，不要塌腰弓背。"
-            ],
-            tips: [
-                "建议先从徒手深蹲、史密斯深蹲练习，确认动作稳定再上杠铃。",
-                "全程保持腰背略微生理前凸，避免圆背和塌腰。",
-                "动作变形时不要硬顶重量，安全性优先于数字。"
-            ]
-        },
-        {
-            id: "db_lunge",
-            bodyPart: "legs",
-            category: "dumbbell",
-            name: "哑铃弓步蹲",
-            equipment: "一对哑铃",
-            targetMuscles: "股四头肌、臀大肌、腘绳肌、臀中肌",
-            difficulty: "新手-中级",
-            description: "单腿主导的动作，用于改善左右腿力量差异和下肢稳定性。",
-            steps: [
-                "双手各持一只哑铃自然下垂，双脚与髋同宽站立。",
-                "向前迈一大步，前脚踩稳，后脚脚尖支撑。",
-                "弯曲双膝让身体垂直下沉，直到前腿大腿接近与地面平行。",
-                "前脚脚跟发力推回起始位置，换腿重复。"
-            ],
-            tips: [
-                "上身略前倾但不要圆背，目视前方。",
-                "下沉时前膝不要明显超过脚尖，膝盖保持与脚尖方向一致。",
-                "可先从徒手弓步练起，再逐步加入哑铃重量。"
-            ]
-        },
-
-        // === 胸部 ===
-        {
-            id: "chest_press_machine",
-            bodyPart: "chest",
-            category: "machine",
-            name: "坐姿推胸机",
-            equipment: "推胸机 · 固定器械",
-            targetMuscles: "胸大肌、前三角肌、肱三头肌",
-            difficulty: "新手友好",
-            description: "模拟卧推的推举动作，轨迹固定，更便于新手锁定胸部发力，安全性高。",
-            steps: [
-                "调整座椅高度，使把手大致在胸中部略低位置。",
-                "背部紧贴靠垫，双脚稳踩地面，握住把手。",
-                "吸气时缓慢让把手回到接近胸部位置。",
-                "呼气时用胸部发力将把手推向前方，肘关节接近伸直即可。"
-            ],
-            tips: [
-                "想象用胸把把手推出去，而不是仅靠手臂用力。",
-                "保持肩胛略向后收紧，有助于提高胸肌参与度。",
-                "如果肩前侧有不适，可略微调低重量和活动范围。"
-            ]
-        },
-        {
-            id: "pec_fly_machine",
-            bodyPart: "chest",
-            category: "machine",
-            name: "蝴蝶机夹胸",
-            equipment: "蝴蝶机 · 固定器械",
-            targetMuscles: "胸大肌（偏内侧）",
-            difficulty: "新手-中级",
-            description: "通过双臂合拢动作集中刺激胸内侧，适合作为推举后补充动作。",
-            steps: [
-                "调整座椅高度，使上臂与地面大致平行。",
-                "双前臂或手肘贴在垫子上，胸部挺起。",
-                "呼气时向前合拢双臂，至手肘接近相碰。",
-                "吸气时缓慢回到起始位置，保持胸部打开。"
-            ],
-            tips: [
-                "肘关节角度大致保持不变，避免变成推举动作。",
-                "顶峰收缩停顿 1 秒，感受胸肌挤压。",
-                "重量不宜过大，以可控和胸部发力感明显为主。"
-            ]
-        },
-        {
-            id: "cable_fly",
-            bodyPart: "chest",
-            category: "free",
-            name: "绳索夹胸（站姿）",
-            equipment: "绳索夹胸机 · 自由器械",
-            targetMuscles: "胸大肌（中下束）、前三角肌",
-            difficulty: "新手-中级",
-            description: "利用绳索提供持续张力，适合塑造胸部线条和挤压感。",
-            steps: [
-                "将滑轮高度调整至胸部附近，双手各握一手柄。",
-                "一脚在前一脚在后站稳，身体略微前倾，肘关节微屈。",
-                "呼气时像抱树干一样，将双手在身体前方合拢。",
-                "吸气时缓慢还原到起始位置，保持胸部打开。"
-            ],
-            tips: [
-                "上臂始终略弯，避免在过程中大幅度改变肘角。",
-                "重量控制在能稳定站姿、不过度摇晃的范围。",
-                "可通过调整滑轮高度改变刺激偏上胸或偏下胸。"
-            ]
-        },
-        {
-            id: "flat_barbell_bench",
-            bodyPart: "chest",
-            category: "barbell",
-            name: "平板杠铃卧推",
-            equipment: "平板凳 + 杠铃",
-            targetMuscles: "胸大肌、肱三头肌、前三角肌",
-            difficulty: "中级",
-            description: "经典的胸部力量动作之一，适合有一定基础后逐渐增加重量。",
-            steps: [
-                "仰卧在卧推凳上，眼睛大致对准杠铃。",
-                "略收肩胛和下背形成稳定支撑，双脚稳踩地面。",
-                "将杠铃从架上移出，吸气时缓慢下放至胸中部附近。",
-                "呼气时用胸和手臂发力将杠铃推回起始位置。"
-            ],
-            tips: [
-                "全程避免耸肩，保持肩胛稳定以保护肩关节。",
-                "下放时不要砸胸，保持可控的接近触碰。",
-                "较大重量时建议有同伴保护或使用安全杠。"
-            ]
-        },
-        {
-            id: "incline_barbell_bench",
-            bodyPart: "chest",
-            category: "barbell",
-            name: "上斜杠铃卧推",
-            equipment: "上斜凳 + 杠铃",
-            targetMuscles: "胸大肌上束、前三角肌、肱三头肌",
-            difficulty: "中级",
-            description: "通过上斜角度加强对上胸的刺激，配合平板卧推可更全面地发展胸部。:contentReference[oaicite:1]{index=1}",
-            steps: [
-                "将凳子调至约 30°–45° 上斜，仰卧后眼睛大致对准杠铃。",
-                "双脚稳踩地面，略收肩胛，双手略宽于肩握杠。",
-                "吸气时将杠铃下放至锁骨与胸上部之间区域。",
-                "呼气时用上胸发力将杠铃推回起始位置。"
-            ],
-            tips: [
-                "角度不宜过高，否则肩部受力过大且胸部参与降低。",
-                "注意控制下放速度，避免对肩前侧造成冲击。",
-                "如肩部不适，可改用上斜哑铃卧推，调整自然角度。"
-            ]
-        },
-        {
-            id: "flat_db_bench",
-            bodyPart: "chest",
-            category: "dumbbell",
-            name: "平板哑铃卧推",
-            equipment: "平板凳 + 一对哑铃",
-            targetMuscles: "胸大肌、肱三头肌、前三角肌",
-            difficulty: "新手-中级",
-            description: "活动范围更大，自由度更高，可以微调角度适配自己的肩关节状态。",
-            steps: [
-                "坐在凳子边缘，将哑铃放在大腿上，躺下时用腿将哑铃带到胸上方。",
-                "掌心朝前，肘略外展，下背保持自然弧度。",
-                "吸气时下放哑铃至接近胸两侧。",
-                "呼气时用胸发力推起哑铃，顶端略靠拢但不碰撞。"
-            ],
-            tips: [
-                "上、下方都保持可控，不要利用惯性猛甩。",
-                "重量较大时需要有人递哑铃与保护。",
-                "如果肩部不适，可缩小活动范围或略内收肘部。"
-            ]
-        },
-        {
-            id: "db_fly",
-            bodyPart: "chest",
-            category: "dumbbell",
-            name: "平板哑铃飞鸟",
-            equipment: "平板凳 + 一对哑铃",
-            targetMuscles: "胸大肌（拉伸和内收）、前三角肌",
-            difficulty: "中级",
-            description: "强调胸部拉伸和内收，对肩部稳定性要求较高，适合作为较轻重量的感觉型动作。:contentReference[oaicite:2]{index=2}",
-            steps: [
-                "仰卧在平板凳上，双手持哑铃于胸上方，掌心相对。",
-                "肘关节微屈，保持这一角度不变。",
-                "吸气时向两侧缓慢打开手臂，感受胸部拉伸。",
-                "呼气时像抱大树一样将哑铃向上合拢回到起始位置。"
-            ],
-            tips: [
-                "下放深度以不引起肩前侧明显不适为界，不要过分追求“到最底”。",
-                "全程保持重量可控，避免突然失力。",
-                "建议使用轻-中等重量，专注拉伸和挤压感。"
-            ]
-        },
-
-        // === 背部 ===
-        {
-            id: "lat_pulldown",
-            bodyPart: "back",
-            category: "machine",
-            name: "高位下拉",
-            equipment: "高位下拉机 · 固定器械",
-            targetMuscles: "背阔肌、下斜方肌、肱二头肌",
-            difficulty: "新手友好",
-            description: "模拟引体向上的拉动动作，是新手训练背阔肌的核心动作之一。",
-            steps: [
-                "坐在器械上，调整大腿压垫固定身体。",
-                "宽握横杠，微微后仰约 10–15°，胸部抬起。",
-                "呼气时将横杠拉向上胸或锁骨附近。",
-                "吸气时控制横杠缓慢回到起始位置，手臂接近伸直即可。"
-            ],
-            tips: [
-                "想象腋下夹住东西，用背而不是纯手臂发力。",
-                "避免身体大幅摇摆借力，重量过大就减轻。",
-                "肩胛下沉收紧，能更好找到背部发力。"
-            ]
-        },
-        {
-            id: "seated_row_machine",
-            bodyPart: "back",
-            category: "machine",
-            name: "坐姿划船机（胸垫）",
-            equipment: "坐姿划船机 · 固定器械",
-            targetMuscles: "中背（菱形肌、斜方肌）、背阔肌、肱二头肌",
-            difficulty: "新手友好",
-            description: "胸部有支撑，腰背负担更小，适合多数人用来练习正确的“夹肩胛”动作。",
-            steps: [
-                "调整座椅与胸垫，让胸部舒适贴靠，双脚踩稳。",
-                "双手握住把手，肩膀放松下沉。",
-                "呼气时夹紧肩胛骨，将把手拉向下胸或肋骨附近。",
-                "吸气时控制还原，手臂伸直但不耸肩。"
-            ],
-            tips: [
-                "动作顺序：先夹肩胛，再用手臂弯曲拉动。",
-                "保持头部中立，避免探头看镜子导致颈部紧张。",
-                "适合作为驼背人群的背部基础训练动作。"
-            ]
-        },
-        {
-            id: "cable_row",
-            bodyPart: "back",
-            category: "free",
-            name: "坐姿低位划船",
-            equipment: "坐姿划船机 · 自由器械",
-            targetMuscles: "背阔肌、菱形肌、中下斜方肌、肱二头肌",
-            difficulty: "新手友好",
-            description: "提高中背厚度，帮助改善含胸圆肩问题。",
-            steps: [
-                "坐在凳子上，双脚踩踏板，双手握把，身体略前倾。",
-                "收紧核心，保持背部自然伸直。",
-                "呼气时将把手拉向腹部或肚脐附近，肩胛骨向后夹紧。",
-                "吸气时控制还原，手臂伸直但不耸肩。"
-            ],
-            tips: [
-                "避免靠腰背大幅度前后摇晃借力。",
-                "拉到最后稍作停顿，专注感受背部收缩。",
-                "如果下背压力大，可略直立上身减少前倾角度。"
-            ]
-        },
-        {
-            id: "straight_arm_pulldown",
-            bodyPart: "back",
-            category: "free",
-            name: "直臂下压",
-            equipment: "高位绳索 + 直杆",
-            targetMuscles: "背阔肌（尤其是下部）、大圆肌",
-            difficulty: "新手-中级",
-            description: "强调背阔肌下拉轨迹的感觉，有助于练习“用背下拉而不是用手拉”。:contentReference[oaicite:3]{index=3}",
-            steps: [
-                "站在高位滑轮前，双手宽握直杆，手臂伸直。",
-                "身体略前倾，核心收紧，手臂保持接近伸直不锁死。",
-                "呼气时以肩关节为轴，将直杆沿弧线压向大腿前方。",
-                "吸气时控制还原到起始位置，感受背阔被拉长。"
-            ],
-            tips: [
-                "过程中肘关节只做微小变化，避免变成弯举动作。",
-                "重量要可控，目标是建立背阔肌感觉而不是追求数字。",
-                "可在高位下拉或引体向上之前作为“激活动作”。"
-            ]
-        },
-        {
-            id: "barbell_row",
-            bodyPart: "back",
-            category: "barbell",
-            name: "俯身杠铃划船",
-            equipment: "杠铃",
-            targetMuscles: "背阔肌、菱形肌、斜方肌、竖脊肌",
-            difficulty: "中级",
-            description: "典型的厚背动作，对腰背稳定性要求较高，适合已有基础的人。",
-            steps: [
-                "双脚与髋同宽站立，髋关节折叠，身体前倾约 45°。",
-                "双手略宽于肩握杠，背部保持中立，核心收紧。",
-                "呼气时将杠铃拉向肚脐或下腹部。",
-                "吸气时控制下放，手臂接近伸直但不完全松脱。"
-            ],
-            tips: [
-                "全程保持下背紧张，不要塌腰圆背。",
-                "如腰部有既往不适，优先使用坐姿划船等器械替代。",
-                "重量不必夸张，用稳定可控的中等重量做 8–12 次更实际。"
-            ]
-        },
-        {
-            id: "db_row",
-            bodyPart: "back",
-            category: "dumbbell",
-            name: "单臂哑铃划船",
-            equipment: "哑铃 + 平板凳",
-            targetMuscles: "背阔肌、菱形肌、斜方肌、肱二头肌",
-            difficulty: "新手-中级",
-            description: "单侧训练可纠正左右差异，对腰部压力较小，适合多数人练背入门。",
-            steps: [
-                "一侧膝盖和同侧手放在凳子上支撑，另一条腿在地上。",
-                "空闲的一手握哑铃，手臂自然下垂，背部保持平直。",
-                "呼气时沿身体侧面将哑铃拉向腰部或髋部附近。",
-                "吸气时控制哑铃下放回起始位置。"
-            ],
-            tips: [
-                "躯干避免扭转，专注背部发力而不是只用手臂硬拉。",
-                "顶峰收缩可以停顿 1 秒，增强背部挤压感。",
-                "可搭配高位下拉、坐姿划船一起安排在同一训练日。"
-            ]
-        },
-
-        // === 手臂 ===
-        {
-            id: "curl_machine",
-            bodyPart: "arms",
-            category: "machine",
-            name: "弯举机（肱二头）",
-            equipment: "弯举机 · 固定器械",
-            targetMuscles: "肱二头肌、肱肌",
-            difficulty: "新手友好",
-            description: "轨迹固定，能帮助新手学会“锁死肘部”的弯举模式，减少乱晃。",
-            steps: [
-                "调整座椅高度，使上臂舒适贴在垫子上。",
-                "双手握把，手臂自然伸直但不锁死。",
-                "呼气时弯曲肘关节，将把手卷起至接近肩部。",
-                "吸气时缓慢下放回到起始位置。"
-            ],
-            tips: [
-                "肩部放松，不要耸肩代替手臂发力。",
-                "避免借助身体摆动，专注感受二头肌收缩和拉伸。",
-                "重量可稍偏中高，作为手臂主力动作之一。"
-            ]
-        },
-        {
-            id: "triceps_pushdown",
-            bodyPart: "arms",
-            category: "free",
-            name: "绳索下压（肱三头）",
-            equipment: "高位绳索 + 绳把",
-            targetMuscles: "肱三头肌",
-            difficulty: "新手-中级",
-            description: "发展手臂后侧线条的常规动作，可与各种卧推动作组合使用。",
-            steps: [
-                "绳索固定在高位，双手握绳两端，肘部贴近身体两侧。",
-                "上臂保持稳定，只让前臂活动。",
-                "呼气时向下伸展手臂至肘关节接近伸直。",
-                "吸气时控制还原至前臂略水平的位置。"
-            ],
-            tips: [
-                "不要让肘部向前跑位，上臂固定是关键。",
-                "末端可以略微向两侧分开绳索，加强三头收缩感。",
-                "如果手腕不适，可以改用直杆或 V 型杆。"
-            ]
-        },
-        {
-            id: "barbell_curl",
-            bodyPart: "arms",
-            category: "barbell",
-            name: "杠铃弯举",
-            equipment: "直杠或弯曲杠",
-            targetMuscles: "肱二头肌、肱肌、肱桡肌",
-            difficulty: "中级",
-            description: "整体提升臂围的经典动作，对力量和控制要求都较高。",
-            steps: [
-                "双脚与肩同宽站立，掌心向前握住杠铃。",
-                "上臂贴近身体两侧，肩部放松，核心收紧。",
-                "呼气时弯曲肘关节，将杠铃卷起至接近肩部。",
-                "吸气时缓慢下放杠铃回到大腿前方。"
-            ],
-            tips: [
-                "避免身体明显后仰借力，重量过大就减轻。",
-                "保持手腕中立，减少手腕压力。",
-                "多数人用弯曲杠会比直杠更舒适。"
-            ]
-        },
-        {
-            id: "db_alt_curl",
-            bodyPart: "arms",
-            category: "dumbbell",
-            name: "交替哑铃弯举",
-            equipment: "一对哑铃",
-            targetMuscles: "肱二头肌、肱肌",
-            difficulty: "新手-中级",
-            description: "单侧交替训练更容易在每一侧都建立肌肉感觉，减少强侧代偿。",
-            steps: [
-                "双手各持一只哑铃自然下垂，掌心朝向身体。",
-                "一侧手臂开始弯举，同时旋转手腕使掌心朝上。",
-                "卷起至接近肩部稍作停顿，控制下放。",
-                "左右交替进行，保持躯干稳定。"
-            ],
-            tips: [
-                "上臂尽量保持垂直，不要向前摆动。",
-                "避免利用惯性猛甩哑铃，尤其在下放阶段要有控制。",
-                "可以刻意放慢下放速度，提高肌肉张力时间。"
-            ]
-        },
-
-        // === 肩部 ===
-        {
-            id: "shoulder_press_machine",
-            bodyPart: "shoulders",
-            category: "machine",
-            name: "坐姿推肩机",
-            equipment: "推肩机 · 固定器械",
-            targetMuscles: "三角肌前束、中束、肱三头肌",
-            difficulty: "新手友好",
-            description: "在固定轨迹下练习头顶推举动作，对核心稳定性要求较低，是肩推入门选择。",
-            steps: [
-                "调整座椅高度，使把手大致位于下巴到耳朵之间。",
-                "背部贴紧靠垫，双脚稳踩地面。",
-                "呼气时将把手向上推举至手臂接近伸直。",
-                "吸气时控制把手下放回起始位置。"
-            ],
-            tips: [
-                "避免耸肩，颈部保持放松。",
-                "肩关节不舒服的情况下不要在低位过度下放。",
-                "可在胸部训练日或与腿部分开单独安排肩部训练日。"
-            ]
-        },
-        {
-            id: "smith_shrug",
-            bodyPart: "shoulders",
-            category: "free",
-            name: "史密斯耸肩",
-            equipment: "史密斯机 · 自由器械",
-            targetMuscles: "斜方肌上束",
-            difficulty: "新手-中级",
-            description: "主要训练上斜方肌，有助于增强上背厚度和肩颈稳定性。:contentReference[oaicite:4]{index=4}",
-            steps: [
-                "站在史密斯机下方，双手略宽于肩握杠，手臂自然伸直。",
-                "呼气时向上耸肩，尽量让肩膀接近耳朵。",
-                "在最高点稍作停顿。",
-                "吸气时缓慢还原，肩膀完全放松下沉。"
-            ],
-            tips: [
-                "动作过程中保持手臂伸直，不要弯曲肘关节。",
-                "下颌保持略收，不要伸头前探。",
-                "可作为背部或肩部训练末尾的补充动作。"
-            ]
-        },
-        {
-            id: "barbell_upright_row",
-            bodyPart: "shoulders",
-            category: "barbell",
-            name: "杠铃直立划船",
-            equipment: "杠铃",
-            targetMuscles: "三角肌中束、斜方肌",
-            difficulty: "中级",
-            description: "常见肩部/斜方复合动作，有一定肩袖压迫风险，建议采用中等重量和适中幅度。:contentReference[oaicite:5]{index=5}",
-            steps: [
-                "双脚与肩同宽站立，双手略窄于肩宽正握杠铃，杠铃位于大腿前。",
-                "呼气时沿身体前侧将杠铃向上拉至胸部或上腹部高度。",
-                "肘部抬高略高于手腕。",
-                "吸气时控制下放回起始位置。"
-            ],
-            tips: [
-                "如果肩部有不适史，建议减少动作幅度或替换为侧平举。",
-                "全程保持背部自然直立，不要前后摇摆。",
-                "重量不宜过大，以 10–15 次可控为宜。"
-            ]
-        },
-        {
-            id: "db_shoulder_press",
-            bodyPart: "shoulders",
-            category: "dumbbell",
-            name: "坐姿哑铃推举",
-            equipment: "哑铃 + 坐姿凳",
-            targetMuscles: "三角肌前束、中束、肱三头肌",
-            difficulty: "新手-中级",
-            description: "自由度高，可微调手腕与肘部角度降低肩关节压力，是多数人适用的肩推动作。",
-            steps: [
-                "坐在有靠背的凳子上，双手持哑铃于肩部两侧。",
-                "掌心可朝前或略向内，肘部略在身体前侧。",
-                "呼气时将哑铃推至头顶上方，手臂接近伸直。",
-                "吸气时缓慢控制下放至肩部附近。"
-            ],
-            tips: [
-                "避免在底部下放过深引起肩部夹挤。",
-                "保持腰背贴靠靠背，避免明显后仰。",
-                "重量较大时可由同伴递哑铃到位。"
-            ]
-        },
-        {
-            id: "reverse_fly",
-            bodyPart: "shoulders",
-            category: "dumbbell",
-            name: "俯身哑铃反向飞鸟",
-            equipment: "哑铃",
-            targetMuscles: "三角肌后束、上背（菱形肌、斜方肌）",
-            difficulty: "新手-中级",
-            description: "针对肩后束的关键动作，有助于平衡胸推类训练造成的肩前后力量差异。:contentReference[oaicite:6]{index=6}",
-            steps: [
-                "双脚与髋同宽站立，髋关节折叠，身体前倾接近与地面平行。",
-                "双手各持一只哑铃，自然下垂，掌心相对。",
-                "呼气时向两侧抬起手臂，至上臂接近与地面平行。",
-                "吸气时控制下放回起始位置。"
-            ],
-            tips: [
-                "背部保持中立，不过度塌腰或拱背。",
-                "哑铃重量不宜大，目标是感受后肩和上背收缩。",
-                "可使用坐姿俯身或胸支撑变式减轻腰部压力。"
-            ]
-        },
-
-        // === 有氧 ===
-        {
-            id: "treadmill_walk",
-            bodyPart: "cardio",
-            category: "machine",
-            name: "跑步机快走 / 慢跑",
-            equipment: "跑步机",
-            targetMuscles: "心肺系统、下肢耐力",
-            difficulty: "新手友好",
-            description: "最常见的有氧方式之一，通过调整速度和坡度可以覆盖从恢复性走路到中高强度有氧训练。",
-            steps: [
-                "先以较慢速度行走 3–5 分钟作为热身。",
-                "逐渐调整到快走或轻微喘气但能讲话的慢跑速度。",
-                "保持肩膀放松，目视前方，避免长时间低头看手机。",
-                "训练结束前 3–5 分钟逐步降低速度作为放松。"
-            ],
-            tips: [
-                "刚开始不建议强行高速跑，先建立基础耐力和习惯。",
-                "需要扶扶手时应适当降低速度，避免虚高的速度数字。",
-                "减脂期建议每次 30–45 分钟，每周 3–5 次。"
-            ]
-        },
-        {
-            id: "bike_cardio",
-            bodyPart: "cardio",
-            category: "machine",
-            name: "动感单车 / 固定脚踏车",
-            equipment: "动感单车 / 固定脚踏车",
-            targetMuscles: "心肺系统、大腿前后侧、小腿肌群",
-            difficulty: "新手友好",
-            description: "对膝关节冲击相对较小，适合体重偏大或不适合高冲击跑跳的人进行有氧训练。",
-            steps: [
-                "调整坐垫高度，让脚踩到底时膝盖略弯。",
-                "先以低阻力踩踏 3–5 分钟热身。",
-                "根据心率和呼吸情况逐步提高阻力或节奏。",
-                "结束前逐渐降低阻力和节奏进行放松。"
-            ],
-            tips: [
-                "保持脚尖和膝盖方向一致，减少膝关节扭转压力。",
-                "上半身可以略微前倾，但避免塌腰耸肩。",
-                "可采用间歇形式（例如 1 分钟快 + 1 分钟慢）提高训练效率。"
-            ]
-        },
-        {
-            id: "jump_rope",
-            bodyPart: "cardio",
-            category: "free",
-            name: "跳绳（间歇）",
-            equipment: "跳绳",
-            targetMuscles: "心肺系统、小腿肌群、协调性",
-            difficulty: "新手-中级",
-            description: "高效燃脂的有氧形式之一，配合间歇设计可以控制关节压力并提高训练趣味性。",
-            steps: [
-                "根据身高选择合适长度的跳绳，双脚与髋同宽站立。",
-                "主要用手腕甩绳，脚尖轻点地面起跳。",
-                "可以采用 30 秒跳 + 30 秒休息的间歇形式循环。",
-                "根据体能逐步增加工作时间和总时长。"
-            ],
-            tips: [
-                "体重较大或膝踝有旧伤者不建议长时间高强度跳绳，可改用单车或椭圆机。",
-                "着地时膝盖微屈，减缓冲击。",
-                "与力量训练和饮食控制结合，减脂效率会明显提升。"
-            ]
-        }
-    ];
-
-    let currentBodyPart = "legs";
-    let currentCategory = "machine";
-    let searchKeyword = "";
-
-    document.addEventListener("DOMContentLoaded", () => {
-        initTabs();
-        initBodyParts();
-        currentCategory = getDefaultCategoryForPart(currentBodyPart);
-        updateCategories();
-        updateExerciseList();
-        initSearch();
-        initAnalysis();
-    });
-
-    function initTabs() {
-        const tabButtons = document.querySelectorAll(".tab-button");
-        const sections = document.querySelectorAll(".tab-section");
-        tabButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                const targetId = btn.dataset.target;
-                tabButtons.forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                sections.forEach(sec => sec.classList.add("hidden"));
-                const target = document.getElementById(targetId);
-                if (target) target.classList.remove("hidden");
-            });
-        });
-    }
-
-    function initBodyParts() {
-        const container = document.getElementById("bodyPartList");
-        container.innerHTML = "";
-        Object.keys(BODY_PARTS).forEach(key => {
-            const part = BODY_PARTS[key];
-            const btn = document.createElement("button");
-            btn.className = "bodypart-button" + (key === currentBodyPart ? " active" : "");
-            btn.dataset.part = key;
-            btn.innerHTML = `<span class="icon">${part.icon}</span><span>${part.label}</span>`;
-            btn.addEventListener("click", () => {
-                currentBodyPart = key;
-                currentCategory = getDefaultCategoryForPart(currentBodyPart);
-                searchKeyword = "";
-                const searchInput = document.getElementById("exerciseSearch");
-                if (searchInput) searchInput.value = "";
-                document.querySelectorAll(".bodypart-button").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                updateCategories();
-                updateExerciseList();
-            });
-            container.appendChild(btn);
-        });
-    }
-
-    function initSearch() {
-        const input = document.getElementById("exerciseSearch");
-        if (!input) return;
-        input.addEventListener("input", () => {
-            searchKeyword = input.value.trim();
-            updateExerciseList();
-        });
-    }
-
-    function getCategoriesForPart(part) {
-        const cats = EXERCISES
-            .filter(e => e.bodyPart === part)
-            .map(e => e.category);
-        const unique = Array.from(new Set(cats));
-        unique.sort((a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b));
-        return unique;
-    }
-
-    function getDefaultCategoryForPart(part) {
-        const cats = getCategoriesForPart(part);
-        return cats[0] || null;
-    }
-
-    function updateCategories() {
-        const container = document.getElementById("categoryList");
-        container.innerHTML = "";
-        const cats = getCategoriesForPart(currentBodyPart);
-        if (!cats.length) return;
-        cats.forEach(catKey => {
-            const btn = document.createElement("button");
-            btn.className = "category-button" + (catKey === currentCategory ? " active" : "");
-            btn.dataset.category = catKey;
-            btn.textContent = CATEGORY_LABELS[catKey] || catKey;
-            btn.addEventListener("click", () => {
-                currentCategory = catKey;
-                document.querySelectorAll(".category-button").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                updateExerciseList();
-            });
-            container.appendChild(btn);
-        });
-    }
-
-    function updateExerciseList() {
-        const listEl = document.getElementById("exerciseList");
-        const detailEl = document.getElementById("exerciseDetail");
-        if (!listEl || !detailEl) return;
-
-        let exercises = EXERCISES.filter(
-            e => e.bodyPart === currentBodyPart && e.category === currentCategory
-        );
-
-        if (searchKeyword) {
-            const keyword = searchKeyword.toLowerCase();
-            exercises = exercises.filter(e => {
-                const text = (e.name + e.targetMuscles + e.description).toLowerCase();
-                return text.includes(keyword);
-            });
-        }
-
-        listEl.innerHTML = "";
-        if (!exercises.length) {
-            listEl.innerHTML = '<p class="empty-text">当前筛选条件下没有匹配的动作，可以尝试更换部位、器械类型或清空搜索关键字。</p>';
-            detailEl.innerHTML = '<p class="placeholder-text">暂时没有可显示的动作详情。</p>';
-            return;
-        }
-
-        exercises.forEach(ex => {
-            const item = document.createElement("div");
-            item.className = "exercise-item";
-            item.dataset.id = ex.id;
-            item.innerHTML = `
-                <div class="exercise-name">${ex.name}</div>
-                <div class="exercise-meta">${CATEGORY_LABELS[ex.category]} · ${ex.difficulty}</div>
-                <div class="exercise-muscles">训练肌群：${ex.targetMuscles}</div>
-            `;
-            item.addEventListener("click", () => {
-                document.querySelectorAll(".exercise-item").forEach(i => i.classList.remove("active"));
-                item.classList.add("active");
-                renderExerciseDetail(ex);
-            });
-            listEl.appendChild(item);
-        });
-
-        const firstItem = listEl.querySelector(".exercise-item");
-        if (firstItem) {
-            firstItem.classList.add("active");
-            renderExerciseDetail(exercises[0]);
-        }
-    }
-
-    function renderExerciseDetail(ex) {
-        const detailEl = document.getElementById("exerciseDetail");
-        if (!detailEl) return;
-        const stepList = ex.steps.map(s => `<li>${s}</li>`).join("");
-        const tipList = ex.tips.map(t => `<li>${t}</li>`).join("");
-        detailEl.innerHTML = `
-            <h3>${ex.name}</h3>
-            <p class="exercise-equipment">${ex.equipment}</p>
-            <p class="exercise-muscles-main">主要训练肌群：${ex.targetMuscles}</p>
-            <p class="exercise-desc">${ex.description}</p>
-            <h4>标准动作步骤</h4>
-            <ol class="step-list">${stepList}</ol>
-            <h4>安全与发力要点</h4>
-            <ul class="tip-list">${tipList}</ul>
-            <p class="disclaimer">
-                提示：以上为通用动作建议。实际训练时应根据自身关节情况、既往病史和当天状态合理调整重量与训练量；
-                如出现异常疼痛或明显不适，请立即停止动作并视情况咨询专业教练或医生。
-            </p>
-        `;
-    }
-
-    // ---------------------------
-    // 身体分析逻辑
-    // ---------------------------
-    function initAnalysis() {
-        const form = document.getElementById("analysisForm");
-        if (!form) return;
-        form.addEventListener("submit", e => {
-            e.preventDefault();
-            analyzeBody();
-        });
-    }
-
-    function analyzeBody() {
-        const heightInput = document.getElementById("heightInput");
-        const weightInput = document.getElementById("weightInput");
-        const heightCm = parseFloat(heightInput.value);
-        const weightKg = parseFloat(weightInput.value);
-
-        if (!heightCm || !weightKg || heightCm <= 0 || weightKg <= 0) {
-            alert("请输入有效的身高和体重。");
-            return;
-        }
-
-        const heightM = heightCm / 100;
-        const bmi = weightKg / (heightM * heightM);
-        const bmiRounded = bmi.toFixed(1);
-
-        let bmiStatus, trainingFocus, planHtml;
-
-        if (bmi < 18.5) {
-            bmiStatus = "偏瘦（建议以增肌为主）";
-            trainingFocus = "优先增肌，兼顾全身力量和少量有氧，防止体重继续下降。";
-            planHtml = `
-                <h4>推荐训练计划（每周 3 天示例 | 偏瘦 · 增肌优先）</h4>
-                <ul>
-                    <li><strong>Day 1：</strong>胸 + 三头 + 15 分钟跑步机快走</li>
-                    <li><strong>Day 2：</strong>背 + 二头 + 核心（平板支撑、死虫等）</li>
-                    <li><strong>Day 3：</strong>腿 + 肩 + 10–15 分钟低强度有氧</li>
-                </ul>
-                <p>力量训练可以选择器械 + 哑铃为主，每个大肌群 3–4 个动作，每个动作 3–4 组，每组 8–12 次，
-                重量控制在最后 2 次吃力但能保持动作标准。饮食上保证足够碳水和蛋白，睡眠尽量充足。</p>
-            `;
-        } else if (bmi < 25) {
-            bmiStatus = "正常范围（更关注体型质量）";
-            trainingFocus = "力量和有氧结合，目标是让围度和线条更好看，而不是单纯看体重。";
-            planHtml = `
-                <h4>推荐训练计划（每周 3–4 天示例 | 体重正常 · 综合提升）</h4>
-                <ul>
-                    <li><strong>Day 1：</strong>胸 + 三头 + 20 分钟中等强度有氧</li>
-                    <li><strong>Day 2：</strong>背 + 二头 + 核心</li>
-                    <li><strong>Day 3：</strong>腿 + 肩 + 20 分钟有氧</li>
-                    <li><strong>可选 Day 4：</strong>全身复合动作（深蹲、卧推、划船等）+ 轻度有氧</li>
-                </ul>
-                <p>力量训练以 6–12 次的中等重复为主，既能提升力量又能兼顾肌肉体积。
-                如果更想偏向减脂，可以在饮食上略微控制总热量；如果希望偏向增肌，则适当增加碳水和蛋白摄入。</p>
-            `;
-        } else if (bmi < 30) {
-            bmiStatus = "偏重（建议减脂优先）";
-            trainingFocus = "以减脂为主，同时保留力量训练，避免“只瘦体重不瘦体型”的情况。";
-            planHtml = `
-                <h4>推荐训练计划（每周 4 天示例 | 偏重 · 减脂优先）</h4>
-                <ul>
-                    <li><strong>Day 1：</strong>上肢力量（胸/背/手臂复合动作）+ 25–35 分钟有氧</li>
-                    <li><strong>Day 2：</strong>下肢力量（腿举、弓步、腿弯举等）+ 20–30 分钟有氧</li>
-                    <li><strong>Day 3：</strong>纯有氧 + 核心（跑步机 / 单车 / 椭圆机 30–45 分钟）</li>
-                    <li><strong>Day 4：</strong>全身循环器械训练（每动作 2–3 组，高重复）+ 20 分钟有氧</li>
-                </ul>
-                <p>饮食上建议保持轻微热量缺口（总体吃略少于消耗），控制油炸、高糖饮料和零食，
-                同时保证蛋白和蔬菜摄入。坚持 8–12 周效果会更明显。</p>
-            `;
-        } else {
-            bmiStatus = "肥胖（建议在医生建议下以减脂和代谢健康为主）";
-            trainingFocus = "低冲击有氧 + 器械力量为主，循序渐进减脂，安全性优先。";
-            planHtml = `
-                <h4>推荐训练计划（每周 4–5 天示例 | 肥胖 · 安全减脂优先）</h4>
-                <ul>
-                    <li><strong>Day 1：</strong>全身器械力量（推胸机、划船机、腿举等）+ 15–20 分钟低冲击有氧</li>
-                    <li><strong>Day 2：</strong>快走 / 椭圆机 / 单车等有氧 30–45 分钟</li>
-                    <li><strong>Day 3：</strong>休息或轻活动（散步、拉伸）</li>
-                    <li><strong>Day 4：</strong>全身器械力量 + 20–30 分钟有氧</li>
-                    <li><strong>Day 5：</strong>中等强度有氧 30 分钟 + 核心训练</li>
-                </ul>
-                <p>如有高血压、心血管疾病、关节问题等基础疾病，应优先听从医生或康复师建议，
-                不宜进行高冲击、高强度间歇训练。建议从“能轻松坚持”的强度开始，逐步增加训练时间。</p>
-            `;
-        }
-
-        const proteinMin = (1.6 * weightKg).toFixed(0);
-        const proteinMax = (2.2 * weightKg).toFixed(0);
-
-        document.getElementById("bmiResult").textContent = bmiRounded;
-        document.getElementById("bmiStatus").textContent = bmiStatus;
-        document.getElementById("proteinResult").textContent = `${proteinMin} - ${proteinMax} g / 天`;
-        document.getElementById("trainingFocus").textContent = trainingFocus;
-        document.getElementById("planResult").innerHTML = planHtml;
-
-        document.getElementById("analysisOutput").classList.remove("hidden");
-    }
-</script>
-</body>
-</html>
+export default App;
